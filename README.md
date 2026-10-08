@@ -4,6 +4,10 @@
 
 Primary track: **Climate Data & Environmental Monitoring**. Supporting track: **Renewable Energy & Energy Trading** (energy planning, not a trading market).
 
+## City planning twin
+
+The project now opens on a real-map district twin with interactive before/after comparison, cool roofs, rooftop solar, planned mature trees, energy balance, transferred research cooling sensitivities, and verifiable city-scenario receipts. Eight featured cities have authentic OpenStreetMap geometry. The Research library credits six peer-reviewed papers (2024–2026) and four organizer-verified winning projects. Read [the full twin methodology](docs/CITY-TWIN.md) for formulas, source coverage and limitations.
+
 ## What works
 
 - Interactive canvas globe from real Natural Earth land geometry: drag, zoom, pause, and select cities.
@@ -50,7 +54,7 @@ Solar generation is `capacity kWp × tilted irradiance W/m² / 1000 × performan
 
 Receipts use `TerraTrace sorted-key JSON v1`: recursively sort object keys, preserve array order, use JSON number/string encoding, and UTF-8 encode before SHA-256. This is a declared versioned canonicalization scheme, not a claim of full RFC 8785 compliance. `observationIdentity` is embedded in the hashed payload and independently hashed to form `observationId`. The identity contains providers, coordinates, current source times, forecast interval, identity version, and a digest of the scenario inputs. The solar-scenario-v2 identity allows a changed scenario to receive a distinct evidence receipt while rejecting repeated data-and-scenario identities. This is scenario evidence uniqueness, not a global uniqueness claim for the underlying climate observations. Integrity does not prove source truth.
 
-Receipts live in browser storage on this device. Download them for portability. The independent verifier checks the payload and observation identity; envelope creation time and chain metadata are not asserted by that check. A URN in the registry identifies a digest, not a hosted downloadable evidence file. Keep and publish the exported evidence separately when independently shareable availability is needed.
+Receipts live in IndexedDB browser storage on this device, with legacy localStorage migration. Download them for portability. The independent verifier checks the payload and observation identity; envelope creation time and chain metadata are not asserted by that check. A URN in the registry identifies a digest, not a hosted downloadable evidence file. Keep and publish the exported evidence separately when independently shareable availability is needed.
 
 ### Optional real Sepolia anchor
 

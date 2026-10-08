@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {CITIES,dayHours} from '../lib/climate';
+import {TWIN_DEFAULTS,boundsFor,clipPolygon,polygonArea,twinModel,featureInterventions,normalizeUrban,osmMapGeometry,type UrbanData} from '../lib/twin';
+import {makeReceipt,verifyReceipt} from '../lib/proof';
+const climate=JSON.parse(fs.readFileSync('public/reference-data.json','utf8').replace(/^\uFEFF/,''));
+let count=0;
+for(const city of CITIES){const file=`public/urban/${city.id}.json`;if(!fs.existsSync(file))continue;const urban:UrbanData=JSON.parse(fs.readFileSync(file,'utf8'));assert.equal(urban.city.lat,city.lat);assert.ok(urban.features.length);assert.ok(!urban.truncated,'No truncated inventories may be presented as complete');
+ const model=twinModel(climate.data.find((d:{city:{id:string}})=>d.city.id===city.id),urban,TWIN_DEFAULTS);assert.ok(model.complete);assert.ok(model.roofArea>0);assert.ok(model.afterGrid>=0&&model.afterGrid<=model.beforeGrid);assert.ok(model.matched<=model.generated+1e-8);assert.ok(model.matched<=TWIN_DEFAULTS.dailyDemand+1e-8);assert.ok(model.coolArea+model.solarArea<=model.roofArea+1e-8);assert.ok(model.afterDegreeHours<=model.degreeHours+1e-8);
+ const assigned=featureInterventions(urban,TWIN_DEFAULTS);let cool=0,solar=0;for(const f of urban.features.filter(f=>f.kind==='building')){const a=assigned.get(f.id)!;assert.ok(a.cool>=0&&a.solar>=0&&a.cool+a.solar<=1+1e-8);cool+=a.cool*f.area;solar+=a.solar*f.area;}assert.ok(Math.abs(cool-model.coolArea)<1e-5);assert.ok(Math.abs(solar-model.solarArea)<1e-5);
+ const zero=twinModel(climate.data.find((d:{city:{id:string}})=>d.city.id===city.id),urban,{...TWIN_DEFAULTS,coolRoofs:0,solarRoofs:0,trees:0});assert.equal(zero.generated,0);assert.equal(zero.reflected,0);assert.equal(zero.carbon,0);assert.equal(zero.afterGrid,zero.beforeGrid);assert.equal(zero.analogyCooling,0);assert.equal(twinModel(climate.data[0],{...urban,truncated:true},TWIN_DEFAULTS).complete,false);count++;
+}
+assert.equal(count,8,'All 8 featured cities need authentic geometry captures');
+const city=CITIES[0],b=boundsFor(city),points=[{lat:b[0]-.01,lon:b[1]-.01},{lat:b[0]-.01,lon:b[3]+.01},{lat:b[2]+.01,lon:b[3]+.01},{lat:b[2]+.01,lon:b[1]-.01}];assert.ok(Math.abs(polygonArea(clipPolygon(points,b),city)-2560000)<10);
+assert.throws(()=>normalizeUrban({elements:[],remark:'timeout'},city,'test','test'));
+const stitched=osmMapGeometry({elements:[{type:'node',id:1,lat:0,lon:0},{type:'node',id:2,lat:0,lon:.001},{type:'node',id:3,lat:.001,lon:0},{type:'way',id:4,nodes:[1,2,3,1],tags:{building:'yes'}}]});assert.equal(stitched.elements[0].geometry.length,4);assert.throws(()=>osmMapGeometry({elements:[{type:'way',id:1,tags:{building:'yes'},nodes:[999]}]}));
+const urban=normalizeUrban({elements:[{type:'way',id:1,tags:{building:'yes','building:levels':'3'},geometry:points}]},city,'test','test');assert.equal(urban.features[0].heightSource,'floors');
+const source=structuredClone(climate.data[0]);const day=dayHours(source,1);for(const h of day){const i=source.weather.hourly.time.indexOf(h.time);source.weather.hourly.shortwave_radiation[i]=h.label==='13:00'?800:0;source.weather.hourly.global_tilted_irradiance[i]=h.label==='13:00'?1000:0;}
+const m=twinModel(source,urban,{...TWIN_DEFAULTS,trees:0});assert.ok(Math.abs(m.reflected-urban.features[0].area*.4*.5*.8)<1e-4);for(const row of m.rows)if(row.label!=='13:00')assert.equal(row.baseline,row.scenario);
+const lower=twinModel(source,urban,{...TWIN_DEFAULTS,trees:0,referenceRadiation:1000});assert.ok(lower.rows.find(r=>r.label==='13:00')!.scenario!>m.rows.find(r=>r.label==='13:00')!.scenario!);
+source.weather.hourly.shortwave_radiation[source.weather.hourly.time.indexOf(day[0].time)]=null;assert.equal(twinModel(source,urban,TWIN_DEFAULTS).complete,false);
+const identity={kind:'city-twin',geometryDigest:'test',scenarioDigest:'test'};const receipt=await makeReceipt({observationIdentity:identity,urban,settings:TWIN_DEFAULTS},identity);assert.ok((await verifyReceipt(receipt)).valid);const tampered=structuredClone(receipt);(tampered.payload.settings as typeof TWIN_DEFAULTS).trees++;assert.equal((await verifyReceipt(tampered)).valid,false);
+console.log('PASS: 8 real urban captures, polygon clipping, geometry completeness, stable area allocation, energy balance, zero interventions, height provenance, reflected sunlight units, nighttime invariance, irradiance sensitivity, missing data, scenario tamper detection.');
