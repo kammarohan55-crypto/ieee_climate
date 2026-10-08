@@ -9,8 +9,8 @@ export function osmMapGeometry(input:unknown){
  const elements=raw.elements.filter(e=>e.type==='way'&&e.tags&&(e.tags.building||e.tags.highway||e.tags.leisure==='park'||/^(forest|grass|recreation_ground)$/.test(e.tags.landuse??'')||/^(wood|water)$/.test(e.tags.natural??''))).map(e=>{const geometry=(e.nodes??[]).map(id=>nodes.get(id));if(geometry.some(p=>!p))throw Error('Map response is missing referenced nodes.');return {...e,geometry}});
  return {elements};
 }
-export type TwinSettings = {coolRoofs:number;solarRoofs:number;trees:number;canopyPerTree:number;treeCooling:number;oldAlbedo:number;newAlbedo:number;panelDensity:number;performance:number;dailyDemand:number;gridFactor:number;heatThreshold:number;coolingScale:number;referenceRadiation:number};
-export const TWIN_DEFAULTS:TwinSettings={coolRoofs:40,solarRoofs:20,trees:120,canopyPerTree:30,treeCooling:.10,oldAlbedo:.2,newAlbedo:.7,panelDensity:.2,performance:.8,dailyDemand:25000,gridFactor:.4,heatThreshold:30,coolingScale:1,referenceRadiation:800};
+export type TwinSettings = {coolRoofs:number;solarRoofs:number;trees:number;canopyPerTree:number;treeCooling:number;oldAlbedo:number;newAlbedo:number;panelDensity:number;performance:number;dailyDemand:number;gridFactor:number;heatThreshold:number;coolingScale:number;referenceRadiation:number;surveyResidential:number;surveyNonResidential:number};
+export const TWIN_DEFAULTS:TwinSettings={coolRoofs:40,solarRoofs:20,trees:120,canopyPerTree:30,treeCooling:.10,oldAlbedo:.2,newAlbedo:.7,panelDensity:.2,performance:.8,dailyDemand:25000,gridFactor:.4,heatThreshold:30,coolingScale:1,referenceRadiation:800,surveyResidential:25,surveyNonResidential:40};
 export function boundsFor(city:City,radius=800):UrbanData['bounds'] {const dy=radius/111320,dx=dy/Math.max(.15,Math.cos(city.lat*Math.PI/180));return [city.lat-dy,city.lon-dx,city.lat+dy,city.lon+dx]}
 export function localPoint(p:Point,city:City) {return {x:(p.lon-city.lon)*111320*Math.cos(city.lat*Math.PI/180),y:(p.lat-city.lat)*111320}}
 export function clipPolygon(points:Point[],bounds:UrbanData['bounds']):Point[]{

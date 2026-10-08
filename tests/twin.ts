@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {CITIES,dayHours} from '../lib/climate';
 import {TWIN_DEFAULTS,boundsFor,clipPolygon,polygonArea,twinModel,featureInterventions,normalizeUrban,osmMapGeometry,type UrbanData} from '../lib/twin';
 import {makeReceipt,verifyReceipt} from '../lib/proof';
+import {buildingUse,roofSurvey,solarPosition,shadowOffset,shadowEnvelope} from '../lib/city-inspection';
 const climate=JSON.parse(fs.readFileSync('public/reference-data.json','utf8').replace(/^\uFEFF/,''));
 let count=0;
 for(const city of CITIES){const file=`public/urban/${city.id}.json`;if(!fs.existsSync(file))continue;const urban:UrbanData=JSON.parse(fs.readFileSync(file,'utf8'));assert.equal(urban.city.lat,city.lat);assert.ok(urban.features.length);assert.ok(!urban.truncated,'No truncated inventories may be presented as complete');
@@ -21,3 +22,19 @@ const lower=twinModel(source,urban,{...TWIN_DEFAULTS,trees:0,referenceRadiation:
 source.weather.hourly.shortwave_radiation[source.weather.hourly.time.indexOf(day[0].time)]=null;assert.equal(twinModel(source,urban,TWIN_DEFAULTS).complete,false);
 const identity={kind:'city-twin',geometryDigest:'test',scenarioDigest:'test'};const receipt=await makeReceipt({observationIdentity:identity,urban,settings:TWIN_DEFAULTS},identity);assert.ok((await verifyReceipt(receipt)).valid);const tampered=structuredClone(receipt);(tampered.payload.settings as typeof TWIN_DEFAULTS).trees++;assert.equal((await verifyReceipt(tampered)).valid,false);
 console.log('PASS: 8 real urban captures, polygon clipping, geometry completeness, stable area allocation, energy balance, zero interventions, height provenance, reflected sunlight units, nighttime invariance, irradiance sensitivity, missing data, scenario tamper detection.');
+
+const delhiUrban:UrbanData=JSON.parse(fs.readFileSync('public/urban/delhi.json','utf8'));
+const sample={...delhiUrban.features.find(f=>f.kind==='building')!,area:100,id:1,tags:{building:'house'}};
+assert.equal(buildingUse(sample),'Residential');assert.equal(buildingUse({...sample,tags:{building:'yes',amenity:'school'}}),'Non-residential');assert.equal(buildingUse({...sample,tags:{building:'yes'}}),'Unknown');
+const sampleUrban={...delhiUrban,features:[sample,{...sample,id:2,tags:{building:'office'}}]},survey=roofSurvey(sampleUrban,climate.data[0],TWIN_DEFAULTS);
+assert.equal(survey[0].feature.id,2);assert.equal(survey[0].capacity,8);assert.equal(survey[1].capacity,5);
+const solarDay=dayHours(climate.data[0],1),resource=solarDay.reduce((n,h)=>n+h.irradiance!/1000,0);assert.ok(Math.abs(survey[0].generation!-8*resource*.8)<1e-8);
+assert.equal(roofSurvey(sampleUrban,undefined,TWIN_DEFAULTS)[0].generation,null);
+const missing=structuredClone(climate.data[0]);missing.weather.hourly.global_tilted_irradiance[missing.weather.hourly.time.indexOf(solarDay[4].time)]=null;assert.equal(roofSurvey(sampleUrban,missing,TWIN_DEFAULTS)[0].generation,null);
+assert.equal(roofSurvey(sampleUrban,climate.data[0],{...TWIN_DEFAULTS,surveyResidential:0,surveyNonResidential:0})[0].generation,0);
+const equator={...city,lat:0,lon:0};assert.ok(solarPosition(equator,'2026-03-20T12:00',0)!.elevation>86);assert.ok(solarPosition(equator,'2026-03-20T00:00',0)!.elevation< -86);
+assert.ok(Math.abs(solarPosition(equator,'2026-03-20T06:00',0)!.azimuth-90)<3);assert.ok(Math.abs(solarPosition(equator,'2026-03-20T18:00',0)!.azimuth-270)<3);
+const west=solarPosition(equator,'2026-03-20T12:00',0)!,east=solarPosition({...equator,lon:15},'2026-03-20T12:00',3600)!;assert.deepEqual(east,west);assert.equal(solarPosition(equator,'bad-date',0),null);
+const northShadow=shadowOffset(10,{elevation:45,azimuth:180})!;assert.ok(Math.abs(northShadow.y-10)<1e-8);assert.ok(Math.abs(northShadow.x)<1e-8);assert.equal(shadowOffset(10,{elevation:4,azimuth:180}),null);
+const square=[{lat:0,lon:0},{lat:0,lon:10/111320},{lat:10/111320,lon:10/111320},{lat:10/111320,lon:0}];const shape=shadowEnvelope({...sample,points:square,height:10},{...sampleUrban,city:equator},{elevation:45,azimuth:180});assert.ok(Math.abs(polygonArea(shape,equator)-200)<1e-8);assert.deepEqual(shadowEnvelope(sample,sampleUrban,null),[]);
+console.log('PASS: OSM use classification, editable survey coverage, deterministic capacity ranking, hourly forecast integration, missing-data suppression, solar position/UTC-offset/cardinal directions, shadow cutoff and geometric area.');

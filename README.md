@@ -6,7 +6,7 @@ Primary track: **Climate Data & Environmental Monitoring**. Supporting track: **
 
 ## City planning twin
 
-The project now opens on a real-map district twin with interactive before/after comparison, cool roofs, rooftop solar, planned mature trees, energy balance, transferred research cooling sensitivities, and verifiable city-scenario receipts. Eight featured cities have authentic OpenStreetMap geometry. The Research library credits six peer-reviewed papers (2024–2026) and four organizer-verified winning projects. Read [the full twin methodology](docs/CITY-TWIN.md) for formulas, source coverage and limitations.
+The project now opens on a real-map district twin with interactive before/after comparison, cool roofs, rooftop solar, planned mature trees, energy balance, transferred research cooling sensitivities, and verifiable city-scenario receipts. Eight featured cities have authentic OpenStreetMap geometry. The full-width twin includes an expanded inspection workspace, searchable building solar survey queue and animated geometric sun/shadow timeline. The Research library credits nine peer-reviewed papers (2024–2026) and eight organizer-verified winning projects. Read [the full twin methodology](docs/CITY-TWIN.md) for formulas, source coverage and limitations.
 
 ## What works
 
