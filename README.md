@@ -48,7 +48,7 @@ Solar generation is `capacity kWp × tilted irradiance W/m² / 1000 × performan
 
 ## Evidence and blockchain
 
-Receipts use `TerraTrace sorted-key JSON v1`: recursively sort object keys, preserve array order, use JSON number/string encoding, and UTF-8 encode before SHA-256. This is a declared versioned canonicalization scheme, not a claim of full RFC 8785 compliance. `observationIdentity` is embedded in the hashed payload and independently hashed to form `observationId`. The identity contains providers, coordinates, current source times, forecast interval, and identity version. Scenario revisions within that observation require a new identity-version design rather than silently creating a duplicate observation. Integrity does not prove source truth.
+Receipts use `TerraTrace sorted-key JSON v1`: recursively sort object keys, preserve array order, use JSON number/string encoding, and UTF-8 encode before SHA-256. This is a declared versioned canonicalization scheme, not a claim of full RFC 8785 compliance. `observationIdentity` is embedded in the hashed payload and independently hashed to form `observationId`. The identity contains providers, coordinates, current source times, forecast interval, identity version, and a digest of the scenario inputs. The solar-scenario-v2 identity allows a changed scenario to receive a distinct evidence receipt while rejecting repeated data-and-scenario identities. This is scenario evidence uniqueness, not a global uniqueness claim for the underlying climate observations. Integrity does not prove source truth.
 
 Receipts live in browser storage on this device. Download them for portability. The independent verifier checks the payload and observation identity; envelope creation time and chain metadata are not asserted by that check. A URN in the registry identifies a digest, not a hosted downloadable evidence file. Keep and publish the exported evidence separately when independently shareable availability is needed.
 
@@ -72,3 +72,4 @@ Read [the four-minute demo script](docs/DEMO-SCRIPT.md) and [the submission draf
 Today: public forecasts, browser-local evidence, and optional one-publisher testnet anchoring. A production rollout needs shared durable evidence storage, provider capacity agreements, deployed registry governance, sensor calibration where sensors are used, site-specific PV modeling, independently evaluated ML, documented grid factors, and audited contract/code. Neither a short weather forecast nor a cryptographic fingerprint certifies climate impact.
 
 Source code: MIT. Source datasets and bundled upstream starter components retain their own licences.
+
