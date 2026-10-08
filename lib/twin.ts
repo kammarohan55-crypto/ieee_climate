@@ -35,8 +35,8 @@ export function normalizeUrban(input:unknown,city:City,source:string,query:strin
   const kind:UrbanFeature['kind']=tags.building&&tags.building!=='no'?'building':tags.highway?'road':tags.natural==='water'||tags.waterway?'water':'green';
   const points=kind==='road'?f.geometry:clipPolygon(f.geometry,bounds);if(points.length<(kind==='road'?2:3))continue;
   const area=kind==='road'?0:polygonArea(points,city);if(kind!=='road'&&area<4)continue;
-  const rawHeight=parseFloat(tags.height??''),feet=/feet|ft|'/i.test(tags.height??''),mapped=(finite(rawHeight)?rawHeight*(feet ? .3048 : 1):0)||parseFloat(tags['building:levels']??'')*3;
-  features.push({id:f.id,kind,name:tags.name??(kind==='building'?'Mapped building':kind==='road'?'Mapped street':kind==='green'?'Mapped green space':'Mapped water'),points,area,height:finite(mapped)&&mapped>0?Math.min(150,mapped):10,heightSource:finite(mapped)&&mapped>150?'capped':finite(mapped)&&mapped>0?finite(rawHeight)?'mapped':'floors':'assumed',tags});
+  const rawHeight=parseFloat(tags.height??''),floors=parseFloat(tags['building:levels']??''),feet=/feet|ft|'/i.test(tags.height??''),validHeight=finite(rawHeight)&&rawHeight>0,mapped=validHeight?rawHeight*(feet ? .3048 : 1):finite(floors)&&floors>0?floors*3:0;
+  features.push({id:f.id,kind,name:tags.name??(kind==='building'?'Mapped building':kind==='road'?'Mapped street':kind==='green'?'Mapped green space':'Mapped water'),points,area,height:mapped>0?Math.min(150,mapped):10,heightSource:mapped>150?'capped':mapped>0?validHeight?'mapped':'floors':'assumed',tags});
  }
  return {city,radius:800,bounds,features,retrievedAt:new Date().toISOString(),osmTime:raw.osm3s?.timestamp_osm_base??'Unavailable',source,query,status:'live',attribution:'© OpenStreetMap contributors · ODbL 1.0',truncated:false};
 }

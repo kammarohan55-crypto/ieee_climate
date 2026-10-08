@@ -1,30 +1,30 @@
 # TerraTrace: the next city features
 
-Prepared 8 October 2026. These are proposed additions, not capabilities already implemented. The separate Solar planner is removed; building solar surveys and district energy scenarios remain in the city twin.
+Updated 8 October 2026. The City strategy lab and Evidence lens are now implemented. Rainwater capture, measured change and shaded routes remain proposals with explicit data requirements. The separate Solar planner is removed; building solar surveys and district energy scenarios remain in the city twin.
 
 Keep the enlarged district as the main workspace. New tools should answer a decision about that place, with the evidence and assumptions visible beside the map.
 
 ## Build order
 
-| Order | Addition | Decision it supports | Data readiness |
-|---|---|---|---|
-| 1 | City strategy lab | Which combination of roof treatments and mature canopy should we investigate? | Existing geometry, forecast and model suffice. |
-| 2 | Evidence lens | Which parts of this plan need a site survey first? | Existing height provenance and building tags suffice. |
-| 3 | Rainwater capture twin | What tank size and connected roof share are useful under this forecast? | Add hourly rain/showers; tank and demand inputs require user assumptions. |
-| 4 | Measured-change workbench | Did the completed intervention produce the observed change we expected? | Requires actual meter or sensor data. |
-| 5 | Shaded walking routes | How do route length and modeled sun exposure vary by hour? | Requires a connected pedestrian network and better canopy data. |
+| Order | Addition | Status | Decision it supports | Data readiness |
+|---|---|---|---|---|
+| 1 | City strategy lab | Built | Which combination of roof treatments and mature canopy should we investigate? | Existing geometry, forecast and model. |
+| 2 | Evidence lens | Built | Which parts of this plan need a site survey first? | Existing height provenance and building tags. |
+| 3 | Rainwater capture twin | Proposed | What tank size and connected roof share are useful under this forecast? | Add hourly rain/showers; tank and demand inputs require user assumptions. |
+| 4 | Measured-change workbench | Proposed | Did the completed intervention produce the observed change we expected? | Requires actual meter or sensor data. |
+| 5 | Shaded walking routes | Proposed | How do route length and modeled sun exposure vary by hour? | Requires a connected pedestrian network and better canopy data. |
 
 The first two form one coherent upgrade. Water adds a distinct climate problem with a strong visual model. Measurement gives the project a practical path from estimates to evidence. Routing follows after its data requirements are met.
 
 ## 1. City strategy lab
 
-**Workflow.** Adjust the existing twin, save a named alternative, and pin two to four plans beside the unchanged baseline. Compare them using one frozen map and weather snapshot. Select a plan to inspect its buildings, then apply its settings to the working twin. Refreshing data offers an explicit recalculation of the whole comparison.
+**Implemented workflow.** Adjust the existing twin and save up to four named alternatives beside an untreated baseline and working draft. Select any two for the map and compare all alternatives using one frozen map, weather snapshot and shared reference assumptions. Select a plan to inspect its buildings, then apply its settings to the working twin. An explicit recalculation replaces the comparison snapshot for every alternative together. Saved plans and the selected pair persist on this device; comparison mode starts in the current working plan after reload.
 
 **Visual design.** Keep one large map above a compact comparison rail. Use a draggable before/after divider for the two selected plans. Crossfade roof treatments and grow proposed canopy when switching plans; preserve the camera, selected building and map scale. Three synchronized small charts show matched solar energy, reflected sunlight and cooling sensitivity in their own units. A two-axis tradeoff plot compares modeled grid electricity displaced with cooling sensitivity; selecting a point highlights its plan. Include a table so exact values remain accessible.
 
-**Useful outputs.** Treatment area, proposed tree count and mature canopy assumptions, estimated PV generation, demand match, surplus, grid demand and transferred cooling sensitivity. No universal winner or combined environmental score. An optional sensitivity band is labeled as the range obtained from specified assumptions, never a statistical confidence interval.
+**Useful outputs.** Treatment area, proposed tree count and mature canopy assumptions, estimated PV generation, demand match, surplus, grid demand and transferred cooling sensitivity. No universal winner or combined environmental score. The existing temperature chart retains its labeled sensitivity range; the strategy tradeoff plot shows point estimates, not confidence intervals.
 
-**Implementation.** Reuse `lib/twin.ts` and the existing map renderer. Add typed saved strategies with names, settings, snapshot digests and results; store them locally through the existing storage layer. Export and seal the complete comparison, including each alternative and the shared source snapshot. Existing presets become starting points rather than substitutes for saved alternatives.
+**Implementation.** `lib/planning.ts` reuses `lib/twin.ts` and the existing map renderer. Typed strategies retain their three interventions; one shared snapshot stores all source data and reference assumptions. IndexedDB holds at most four saved plans per city. Comparison JSON and receipts contain every alternative, the selected pair, computed results and the shared source snapshot. Existing presets are starting points for saved alternatives.
 
 **Acceptance.** Identical inputs yield identical results. All alternatives share the same source digest. Cool-roof and solar shares cannot exceed available roof area. Clearing a saved alternative leaves the working plan intact. Missing weather suppresses computed energy results. A receipt preserves the exact displayed comparison. Reduced-motion mode shows immediate transitions and all values.
 
@@ -32,13 +32,13 @@ The first two form one coherent upgrade. Water adds a distinct climate problem w
 
 ## 2. Evidence lens
 
-**Workflow.** Switch the twin to height provenance, inspect a building, and add it to a survey checklist. Filter to mapped height, floor-derived height, assumed height or values capped by the current renderer. The inspector exposes original tags and links to the source feature.
+**Implemented workflow.** Switch the twin to Evidence, inspect a building, and add it to a locally saved survey checklist. Filter to mapped height, floor-derived height, assumed height or values capped by the current renderer. Search spans every mapped building. The inspector exposes original tags and links to the source feature. Export a checklist with captured geometry, source dates and survey questions.
 
 **Visual design.** A restrained violet-to-teal provenance palette replaces treatment colors while this lens is selected. A selection outline connects the building to its inspector. A stacked breakdown bar highlights the selected category; it reconciles to the inventory rather than displaying an invented quality score. A separate footprint-density grid can summarize mapped geometry, with cells exposing their counts and areas.
 
-**Useful outputs.** Height source counts, footprint coverage within the captured district, missing building-use tags and a building survey shortlist. This identifies where LiDAR, roof inspection or better mapping would most improve the plan. Coverage describes the bounded mapped sample, not completeness of the whole city.
+**Useful outputs.** Height source counts, summed mapped footprint ratios within 200 m cells, missing building-use and roof-shape tags, and a building survey shortlist. Cell totals clip each footprint at its boundary; overlapping mapped ways can exceed 100%. This identifies where LiDAR, roof inspection or better mapping would improve the plan. It does not establish completeness of the whole city or infer ventilation and heat from density.
 
-**Implementation.** Reuse current height provenance, building IDs, footprint areas and source timestamps. Add derived geometry summaries and a locally saved checklist. Do not infer ventilation, energy demand, measured canopy or street temperature from density alone.
+**Implementation.** `lib/evidence.ts` derives provenance counts and clipped geometry summaries from current building IDs, tags and source timestamps. Checklist entries retain their captured feature rather than silently adopting later map changes. IndexedDB stores the list per city; JSON export includes source IDs, dates, tags, geometry and survey questions. No survey is marked complete by adding an entry.
 
 **Acceptance.** Category counts sum to the inventory. Capped heights retain their original provenance. Missing tags remain missing. Density cells use area intersections so buildings crossing a cell boundary are not counted in full repeatedly. Omitted relations and capture limits remain visible. Checklist export includes source IDs and the map capture date.
 

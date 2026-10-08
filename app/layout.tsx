@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./planning.css";
 
 export const metadata: Metadata = {
   title: "TerraTrace | Climate intelligence, with evidence",

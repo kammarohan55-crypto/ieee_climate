@@ -6,7 +6,7 @@ Primary track: **Climate Data & Environmental Monitoring**. Supporting track: **
 
 ## City planning twin
 
-The project now opens on a real-map district twin with interactive before/after comparison, cool roofs, rooftop solar, planned mature trees, energy balance, transferred research cooling sensitivities, and verifiable city-scenario receipts. Eight featured cities have authentic OpenStreetMap geometry. The full-width twin includes an expanded inspection workspace, searchable building solar survey queue and animated geometric sun/shadow timeline. The Research library credits nine peer-reviewed papers (2024–2026) and eight organizer-verified winning projects. Read [the full twin methodology](docs/CITY-TWIN.md) for formulas, source coverage and limitations.
+The project now opens on a real-map district twin with interactive before/after comparison, cool roofs, rooftop solar, planned mature trees, energy balance, transferred research cooling sensitivities, and verifiable city-scenario receipts. Eight featured cities have authentic OpenStreetMap geometry. The full-width twin includes an expanded inspection workspace, searchable building solar survey queue and animated geometric sun/shadow timeline. The City strategy lab saves up to four plans per city and compares them against one frozen source snapshot. The Evidence lens colors height provenance, inspects clipped footprint-density cells and exports a saved building survey checklist. The Research library credits nine peer-reviewed papers (2024–2026) and eight organizer-verified winning projects. Read [the full twin methodology](docs/CITY-TWIN.md) for formulas, source coverage and limitations.
 
 ## What works
 
@@ -68,7 +68,7 @@ No public-chain contract is predeployed and no funded wallet is bundled. `npm ru
 
 ## Demo and submission
 
-Read [the project walkthrough](docs/PROJECT-WALKTHROUGH.md), [the updated submission draft](docs/SUBMISSION.md), and [the proposed feature roadmap](docs/FEATURE-ROADMAP.md). The standalone Solar planner has been removed. The roadmap describes planned additions, not implemented features. The user has deferred GitHub and requested no video; no submission has been made. The Sites source mirror is private and is not represented as a public GitHub repository.
+Read [the project walkthrough](docs/PROJECT-WALKTHROUGH.md), [the updated submission draft](docs/SUBMISSION.md), and [the feature roadmap](docs/FEATURE-ROADMAP.md). The standalone Solar planner has been removed. The strategy lab and evidence lens are built; water capture, measured change and shaded routes remain proposed. Saved plans and survey lists stay on this device; export them for portability. The user has deferred GitHub and requested no video; no submission has been made. The Sites source mirror is private and is not represented as a public GitHub repository.
 
 **Do not submit automatically.** The official overview deadline is October 25, 2026 at 14:00 UTC / **7:30 PM IST**, but a rules sentence says not before 8 AM PT on October 25 (**8:30 PM IST**, after the deadline). An organizer update instead says submissions open October 5. Resolve this discrepancy directly with the organizers before submitting. [Organizer update](https://ieee-climatechain-hack.devpost.com/updates/46814-climatechain-hackathon-submissions-open-tomorrow-get-ready-to-submit), [rules](https://ieee-climatechain-hack.devpost.com/rules), [overview](https://ieee-climatechain-hack.devpost.com/).
 

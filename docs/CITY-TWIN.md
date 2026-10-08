@@ -42,7 +42,17 @@ A city receipt contains full map geometry, raw forecasts, sources, model version
 
 `npm run test:twin` checks all eight authentic captures, clipping, inventory completeness, area allocation, energy balance, zero interventions, height provenance, reflected sunlight units, nighttime invariance, irradiance sensitivity, missing values and scenario tamper detection. The original data/proof/ML checks remain in `npm test`.
 
-## Building inspection and solar survey (planning v2)
+## Saved strategies and evidence inspection
+
+The City strategy lab saves up to four alternatives per city in IndexedDB on this device. Each alternative stores reflective-roof share, solar-roof share and proposed mature-tree count. The first save freezes a complete forecast, mapped district and shared reference assumptions; daily demand, albedo, equipment factors and cooling references are identical for all alternatives. The untouched baseline sets the three interventions to zero. The working draft uses its current interventions with the same shared references while compared. Data refresh does not silently change a comparison. Recalculate all replaces the shared snapshot for every alternative together, while earlier receipts remain unchanged.
+
+Select two alternatives for the map divider. Roof colors transition and new tree symbols animate, while camera and selected building are retained. The main outcomes, building inspector and hourly chart inspect the right-hand plan. The tradeoff plot and exact table compare every alternative. Electricity matched to assumed demand, reflected sunlight and transferred cooling sensitivity have separate scales and units; no combined environmental score or locally validated optimum is inferred. Apply to draft restores the chosen interventions and reference assumptions to the current-data workspace. JSON export and comparison receipts preserve the shared sources, selected pair, assumptions and results. Saved plans are local; export them for portability.
+
+Evidence mode colors the mapped height tag, mapped floors, assumed 10 m and capped 150 m categories. Counts reconcile to the full mapped building inventory, and the selected inspector exposes original height/floor/use/roof tags. Positive floor counts are used when a height tag is absent or nonpositive. The separate 8 × 8 footprint grid clips each building at cell boundaries, then sums mapped footprint area over cell area. Overlapping ways can exceed 100%; this is not union coverage, measured land occupancy, heat or ventilation. Empty cells do not establish empty land, and omitted relations and capture limits still apply.
+
+Survey-list entries retain the selected building's captured geometry, tags, map source, source-time kind and date. A later map refresh does not rewrite that saved evidence. Entries outside the current inventory remain exportable, with focus unavailable. Checklist export includes OSM IDs, source links and questions about height, roof feasibility, shade, existing PV, permits and meter baselines. Adding an entry records an intended survey rather than a completed survey. These lists are also saved only on this device.
+
+## Building inspection and solar survey details
 
 The map uses the full content width, with an expandable workspace, zoom, dragging, rotation, isometric/plan views and search across every mapped building. A selected building is highlighted and can be focused. Its inspector shows OSM ID, source link, clipped footprint, height provenance, district allocation and a separate solar survey estimate.
 

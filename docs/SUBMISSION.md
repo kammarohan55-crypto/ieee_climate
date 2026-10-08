@@ -26,9 +26,13 @@ Editable reflective-roof, rooftop-PV and mature-canopy scenarios compare energy 
 
 A ranked building roof survey estimates capacity under editable usable-area benchmarks. An animated sun/shade timeline illustrates flat-ground geometric shadows from footprints and heights. This shade display does not adjust the energy or cooling model and does not establish actual thermal comfort.
 
+The City strategy lab saves up to four alternatives per city, compares two on the map and exposes tradeoffs in separate unit scales and an exact table. Every alternative uses one frozen map, forecast and reference-assumption snapshot; an explicit recalculation refreshes all alternatives together. Comparison exports and receipts preserve the entire decision.
+
+The Evidence lens colors buildings by mapped, floor-derived, assumed or capped height. It exposes original tags, counts provenance categories and clips mapped footprints into 200 m density cells. A locally saved survey checklist preserves each building's captured geometry and source date for export. Density is a mapped-geometry summary, not a heat or ventilation prediction; checklist entries do not claim a completed survey.
+
 The Overview and Explore pages show real Open-Meteo weather and CAMS-backed air-quality forecasts, source times and hourly charts. A 64-tree seeded Isolation Forest highlights unusual combinations of temperature, humidity and PM₂.₅ within up to 72 forecast hours. It is exploratory, with no independently validated predictive accuracy.
 
-The Research library credits nine peer-reviewed papers from 2024–2026 and eight organizer-verified winning projects. Each source explains what informed the design and what remains unvalidated. A documented roadmap proposes additional tools; those proposals are not presented as implemented capabilities.
+The Research library credits nine peer-reviewed papers from 2024–2026 and eight organizer-verified winning projects. Each source explains what informed the design and what remains unvalidated. A documented roadmap distinguishes the two implemented additions from proposed water, measurement and routing tools.
 
 The separate task-scheduling Solar planner has been removed. Rooftop energy remains part of the district twin.
 
