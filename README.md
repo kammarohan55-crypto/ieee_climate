@@ -13,7 +13,7 @@ The project now opens on a real-map district twin with interactive before/after 
 - Interactive canvas globe from real Natural Earth land geometry: drag, zoom, pause, and select cities.
 - Real Open-Meteo weather, solar irradiance, and Copernicus CAMS air forecasts for eight featured cities and worldwide geocoding.
 - Forecast charts, regional comparison, and explicit local time zones.
-- Tomorrow's solar-load optimizer with editable capacity, performance factor, task power, duration, baseline timing, and assumed emissions factor.
+- District roof-treatment and mature-canopy scenarios, building survey estimates, and an animated geometric shade timeline inside the city twin.
 - A genuine 64-tree seeded Isolation Forest, trained locally on up to 72 hourly temperature, humidity, and PM₂.₅ forecast samples. This exploratory model has no independently validated predictive accuracy.
 - Portable SHA-256 evidence receipts containing raw model responses, source URLs, retrieval time, units, attribution, location, and scenario. A separate import verifier checks payload integrity and observation identity.
 - A publisher-only Solidity registry that rejects repeated declared observation IDs and repeated exact digests.
@@ -34,6 +34,7 @@ Open the exact local URL printed by the server. No API keys are required for the
 ```sh
 npm run typecheck
 npm test
+npm run test:twin
 npm run test:contract
 npm run build
 ```
@@ -48,11 +49,11 @@ Stack: React 19, TypeScript, Vinext/Vite, Cloudflare Workers-compatible server, 
 - [Natural Earth](https://www.naturalearthdata.com/about/terms-of-use/): public-domain land geometry, prepared by `scripts/prepare-globe.mjs`.
 - `public/reference-data.json`: authentic API responses captured on **8 October 2026**. These are used only when live providers fail, explicitly labeled as a reference capture with original dates. They are never refreshed by changing timestamps.
 
-Solar generation is `capacity kWp × tilted irradiance W/m² / 1000 × performance factor`. Hourly radiation values describe the preceding hour; the planner reindexes them to interval start times and uses the exact next midnight to complete a local day. Panels face the equator, with tilt equal to rounded absolute latitude. Task solar match is the sum of `min(generation kW, task power kW) × 1h` across contiguous hours. The default 0.80 performance and 0.40 kg CO₂e/kWh grid factor are **scenario assumptions**, not measurements. Carbon potential is additional matched solar × assumed factor, not a certified offset. Shading, cell temperature, inverter clipping, batteries, annual output, and causality are not modeled. Compare [a fuller PV model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/point-value-models/pvwatts/).
+District solar generation is `capacity kWp × tilted irradiance W/m² / 1000 × performance factor`, with capacity derived from mapped area, assigned roof fraction and assumed panel density. Hourly radiation values describe the preceding hour; the twin reindexes them to interval start times and uses the exact next midnight to complete a local day. Panels face the equator, with tilt equal to rounded absolute latitude. Solar match is capped at assumed hourly district demand; surplus is separate. Performance and grid factors are **editable scenario assumptions**, not measurements. Carbon potential is matched solar × assumed factor, not a certified offset. The geometric shade animation does not modify PV generation or cooling results. Cell temperature, inverter clipping, batteries, annual output, and causality are not modeled. Compare [a fuller PV model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/point-value-models/pvwatts/).
 
 ## Evidence and blockchain
 
-Receipts use `TerraTrace sorted-key JSON v1`: recursively sort object keys, preserve array order, use JSON number/string encoding, and UTF-8 encode before SHA-256. This is a declared versioned canonicalization scheme, not a claim of full RFC 8785 compliance. `observationIdentity` is embedded in the hashed payload and independently hashed to form `observationId`. The identity contains providers, coordinates, current source times, forecast interval, identity version, and a digest of the scenario inputs. The solar-scenario-v2 identity allows a changed scenario to receive a distinct evidence receipt while rejecting repeated data-and-scenario identities. This is scenario evidence uniqueness, not a global uniqueness claim for the underlying climate observations. Integrity does not prove source truth.
+Receipts use `TerraTrace sorted-key JSON v1`: recursively sort object keys, preserve array order, use JSON number/string encoding, and UTF-8 encode before SHA-256. This is a declared versioned canonicalization scheme, not a claim of full RFC 8785 compliance. `observationIdentity` is embedded in the hashed payload and independently hashed to form `observationId`. Generic data receipts use `environmental-observation-v1`: providers, coordinates, source times, forecast interval and a digest of the raw responses and source URLs. A changed retrieval time alone retains the same identity; revised source data receives a distinct identity. City receipts separately preserve geometry and scenario inputs under `district-planning-v2`. Previously exported receipts remain verifiable, including legacy solar-scenario identities. Integrity does not prove source truth.
 
 Receipts live in IndexedDB browser storage on this device, with legacy localStorage migration. Download them for portability. The independent verifier checks the payload and observation identity; envelope creation time and chain metadata are not asserted by that check. A URN in the registry identifies a digest, not a hosted downloadable evidence file. Keep and publish the exported evidence separately when independently shareable availability is needed.
 
@@ -67,7 +68,7 @@ No public-chain contract is predeployed and no funded wallet is bundled. `npm ru
 
 ## Demo and submission
 
-Read [the four-minute demo script](docs/DEMO-SCRIPT.md) and [the submission draft](docs/SUBMISSION.md). The demo script is prepared; an actual 3–5 minute recorded video and a public GitHub repository URL must be added before submission. The Sites source mirror is private and is not represented as a public GitHub repository.
+Read [the project walkthrough](docs/PROJECT-WALKTHROUGH.md), [the updated submission draft](docs/SUBMISSION.md), and [the proposed feature roadmap](docs/FEATURE-ROADMAP.md). The standalone Solar planner has been removed. The roadmap describes planned additions, not implemented features. The user has deferred GitHub and requested no video; no submission has been made. The Sites source mirror is private and is not represented as a public GitHub repository.
 
 **Do not submit automatically.** The official overview deadline is October 25, 2026 at 14:00 UTC / **7:30 PM IST**, but a rules sentence says not before 8 AM PT on October 25 (**8:30 PM IST**, after the deadline). An organizer update instead says submissions open October 5. Resolve this discrepancy directly with the organizers before submitting. [Organizer update](https://ieee-climatechain-hack.devpost.com/updates/46814-climatechain-hackathon-submissions-open-tomorrow-get-ready-to-submit), [rules](https://ieee-climatechain-hack.devpost.com/rules), [overview](https://ieee-climatechain-hack.devpost.com/).
 

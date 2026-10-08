@@ -49,15 +49,3 @@ export function dayHours(data: ClimateData | undefined, offset=0, capacity = 5, 
 }
 export const todayHours=(data:ClimateData|undefined,capacity=5,derate=.8)=>dayHours(data,0,capacity,derate);
 export function nextHours(data: ClimateData | undefined) { const now = data?.weather?.current.time ?? ""; return hours(data).filter(h => h.time >= now).slice(0, 24); }
-export type SolarPlan = { bestStart: number; bestMatched: number; baselineMatched: number; gain: number; total: number; complete: boolean; rows: { label: string; power: number | null; baseline: number | null; optimized: number | null }[] };
-export function planSolar(day: Hour[], capacity: number, derate: number, power: number, duration: number, baseline: number): SolarPlan {
-  const solar = day.map(h => h.irradiance === null ? null : Math.max(0, h.irradiance) / 1000 * capacity * derate);
-  const matched = (start: number) => solar.slice(start, start + duration).reduce<number>((a, n) => a + (n === null ? 0 : Math.min(n, power)), 0);
-  const complete = day.length === 24 && solar.every(finite);
-  let bestStart = 0, bestMatched = -1;
-  for (let i = 0; i <= 24 - duration; i++) { const v = matched(i); if (v > bestMatched) { bestStart = i; bestMatched = v; } }
-  const baselineMatched = matched(baseline);
-  return { bestStart, bestMatched: Math.max(0,bestMatched), baselineMatched, gain: Math.max(0, bestMatched - baselineMatched), total: solar.reduce<number>((a,n)=>a+(n??0),0), complete,
-    rows: solar.map((n,i)=>({label:`${String(i).padStart(2,"0")}:00`,power:n,baseline:i>=baseline&&i<baseline+duration?power:null,optimized:i>=bestStart&&i<bestStart+duration?power:null})) };
-}
-export function formatWindow(start: number, duration: number) { return `${String(start).padStart(2, "0")}:00–${String(start + duration).padStart(2, "0")}:00`; }

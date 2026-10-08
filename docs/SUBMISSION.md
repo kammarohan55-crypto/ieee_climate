@@ -1,80 +1,60 @@
 # TerraTrace
 
-Preparation draft for the IEEE ClimateChain Global Hackathon 2026. This project has not been submitted. Replace the pending links and complete the handoff checklist before copying this draft into Devpost.
+Project description draft for IEEE ClimateChain 2026. This project has not been submitted. GitHub is deferred and no video is being created at the user's request.
 
-**Tagline:** See the forecast. Choose a cleaner energy window. Keep the evidence.
+**Tagline:** Inspect your district. Compare a climate plan. Keep the evidence.
 
 **Primary track:** Climate Data & Environmental Monitoring.
 
-**Supporting track:** Renewable Energy & Energy Trading.
+**Supporting track:** Renewable Energy & Energy Trading (district energy planning).
 
-**Working prototype:** [Add the verified public demo URL.]
+**Working prototype:** Private project preview; public access is not configured.
 
-**Code repository:** [Add the actual public GitHub repository URL.]
-
-**Demo video:** [Add the recorded 3–5 minute demo video URL.]
+**Code repository:** Deferred until the user supplies the intended GitHub repository.
 
 ## The problem
 
-A campus, community facility, or small business can have useful weather forecasts and rooftop solar while still struggling to answer a practical question: when should a flexible electricity task run? The answer often lives across separate dashboards, and a screenshot rarely preserves the assumptions or data behind the recommendation.
+City sustainability teams need to connect mapped buildings, weather forecasts, intervention assumptions and evidence. A single city-wide total cannot show which roofs need a survey, what assumptions drive an estimate, or how a proposed change compares with the same baseline.
 
-TerraTrace connects environmental context, a transparent energy calculation, and a portable evidence receipt. Its purpose is to help people make a decision they can inspect and explain later.
+TerraTrace brings that workflow into a large, inspectable district twin. It helps teams investigate a plan and preserve the sources behind it.
 
-## What TerraTrace does
+## What works
 
-TerraTrace opens as a dark, animated globe observatory. Selecting a city brings its weather, air quality, and the next 24 hours into one visual workspace. Data come from live requests to the [Open-Meteo Weather API](https://open-meteo.com/en/docs) and its [CAMS-backed Air Quality API](https://open-meteo.com/en/docs/air-quality-api). These are model-based environmental data and forecasts; they are not readings from sensors installed by TerraTrace.
+The project opens on a real OpenStreetMap district with selectable buildings, an expanded workspace, pan, zoom, rotation and plan/isometric views. Eight featured cities have authentic captured geometry. Building inspection exposes footprint area, mapped tags and height provenance. Source dates and map coverage limits stay visible.
 
-The solar planner turns the forecast into a concrete scheduling choice. A user enters the solar installation capacity, system derate, and a flexible task's power and duration, then chooses a baseline start time. TerraTrace searches the available contiguous time windows and compares their modeled solar coverage with that baseline. The result shows the next day suggested window, solar matched to the task, additional solar match versus the baseline, and assumption-based carbon potential.
+Editable reflective-roof, rooftop-PV and mature-canopy scenarios compare energy and transferred cooling sensitivities with the same weather baseline. Roof treatments share limited mapped area. Estimated PV is matched to an assumed hourly demand profile, with surplus separate. Cooling sensitivities are research-based reference assumptions, not locally calibrated predictions.
 
-The calculation is deliberately inspectable: estimated solar power in kW equals installed capacity in kWp multiplied by global tilted irradiance in W/m², divided by 1,000, and multiplied by the system derate. Hourly energy follows from power and interval duration. The task's solar coverage is capped by its demand. This is a simplified forecast scenario, not measured generation, a tariff guarantee, or a certified emissions reduction.
+A ranked building roof survey estimates capacity under editable usable-area benchmarks. An animated sun/shade timeline illustrates flat-ground geometric shadows from footprints and heights. This shade display does not adjust the energy or cooling model and does not establish actual thermal comfort.
 
-A browser-trained Isolation Forest examines up to 72 hours of forecast temperature, relative humidity, and PM2.5. Its outlier scores highlight unusual combinations within that particular forecast for exploration. The model has not been validated against observed outcomes, and the scores are not climate attribution, health advice, or a validated hazard forecast. The scheduling calculation is separate from this exploratory model.
+The Overview and Explore pages show real Open-Meteo weather and CAMS-backed air-quality forecasts, source times and hourly charts. A 64-tree seeded Isolation Forest highlights unusual combinations of temperature, humidity and PM₂.₅ within up to 72 forecast hours. It is exploratory, with no independently validated predictive accuracy.
 
-## Trust that can be checked
+The Research library credits nine peer-reviewed papers from 2024–2026 and eight organizer-verified winning projects. Each source explains what informed the design and what remains unvalidated. A documented roadmap proposes additional tools; those proposals are not presented as implemented capabilities.
 
-TerraTrace creates a versioned JSON evidence receipt for the selected data and scenario. The browser canonicalizes its payload and calculates a real SHA-256 digest. Users can export the receipt, keep it in a local browser ledger, and import it into the verifier. Recomputing the digest detects changes to the committed payload.
+The separate task-scheduling Solar planner has been removed. Rooftop energy remains part of the district twin.
 
-This distinction matters: a matching hash establishes integrity of the saved payload. It does not establish that every forecast is accurate or that an environmental claim has been independently certified.
+## Evidence and blockchain
 
-The project also includes a Solidity evidence registry. Only its publisher may record evidence; the registry rejects a previously recorded observation identifier and a previously recorded digest. That provides an explicit rule against duplicate entries in this registry. It does not create carbon credits or prevent duplicate claims across unrelated systems.
+City receipts preserve the raw forecast, mapped geometry, assumptions, results and research references. Generic environmental receipts preserve raw weather/air responses and source provenance without an unrelated energy scenario. Versioned sorted-key JSON and browser SHA-256 support independent integrity verification. Existing exported receipts remain verifiable.
 
-Optional Sepolia anchoring uses an actual browser wallet and a user-deployed registry address. A local receipt remains labeled as a local proof until a real transaction succeeds and its on-chain record can be read back. Public deployment and a confirmed Sepolia transaction are pending handoff items; this draft claims neither.
+The local ledger uses IndexedDB. A Solidity registry accepts writes only from its publisher and rejects duplicate declared observation IDs and exact digests. Optional Sepolia anchoring uses an actual wallet and deployed registry; the interface verifies confirmation and on-chain read-back. No public-chain deployment or confirmed anchor is claimed.
 
-## Track alignment
+A matching hash proves integrity of the saved payload. It does not validate a forecast, certify environmental impact, create carbon credits, or prevent claims across unrelated registries.
 
-For **Climate Data & Environmental Monitoring**, TerraTrace makes environmental data easier to inspect and preserves the specific dataset and assumptions behind a decision. Source attribution, time labels, exportable receipts, and repeatable verification address the track's transparency challenge.
+## Track alignment and practical impact
 
-For **Renewable Energy & Energy Trading**, the project demonstrates the energy coordination side of the track: scheduling flexible demand to better overlap modeled rooftop solar. The prototype is a planning tool; it does not implement peer-to-peer electricity trading.
+For **Climate Data & Environmental Monitoring**, the twin connects dated environmental sources and mapped geometry with inspectable scenarios and portable evidence. The workflow supports district surveys, campus planning and measurement design.
 
-## Potential environmental impact
+For **Renewable Energy & Energy Trading**, the district model investigates rooftop deployment, forecast generation, assumed demand match and surplus. It does not implement an electricity trading market.
 
-The immediate, measurable outcome is the difference in modeled grid electricity required by the same task under the selected baseline and the recommended schedule. TerraTrace reports that difference in kWh for the displayed scenario. It does not invent a global impact total or convert it into offsets.
+The prototype reports modeled opportunities rather than observed savings. A practical pilot would survey candidate roofs and planting sites, implement a feasible intervention, and compare meter or sensor observations under comparable conditions. Annual energy, payback, pollution reductions and causal climate benefits require additional data and validation.
 
-The intended users are campuses, community buildings, and small businesses with solar and flexible loads such as charging, pumping, or batch equipment. A practical pilot would compare the forecasts with meter data, check operational constraints, and measure how often the suggested schedule reduces grid demand. That would establish whether the prototype's modeled opportunity translates into real benefits.
+## Implementation
 
-## How it was built
+React 19, TypeScript, Vinext/Vite, Recharts, custom Canvas globe and SVG district visualization, Open-Meteo weather/CAMS air-quality APIs, OpenStreetMap geometry, Web Crypto, IndexedDB, ethers and Solidity. The app exposes units, source times, explicit assumptions, missing-data states and reduced-motion controls.
 
-The interface uses React, TypeScript, Tailwind CSS, Recharts, and custom globe visualization and animation. Weather and air-quality APIs supply the environmental inputs. The browser runs the exploratory Isolation Forest, scenario calculations, canonical JSON hashing, and local receipt ledger. Solidity defines the registry; ethers provides the optional wallet and contract connection.
+## Deferred handoff
 
-The design keeps the reasoning close to the visuals: units and time labels accompany the charts, editable assumptions accompany the recommendation, and proof status accompanies each receipt. No proprietary dataset, production wallet key, or paid API is required for the local proof workflow.
-
-## What comes next
-
-The next useful step is a metered pilot. Historical validation would evaluate the solar estimate and the exploratory outlier model. Facility constraints would make the planner operationally realistic, while a shared evidence service and a deployed registry would allow organizations to maintain a common record. Any emissions estimate would require a defensible, time-specific grid factor and its own documented uncertainty.
-
-## Handoff checklist — do not paste this section into the public description
-
-- [ ] Confirm the final public prototype URL and verify it opens without the developer's session.
-- [ ] Create or publish the actual public source repository, then replace the repository placeholder.
-- [ ] Include setup instructions, source attribution, methodology, and explicit limitations in the repository.
-- [ ] Run the final build and exercise city selection, forecast charts, planner inputs, outlier display, receipt export, and receipt import verification.
-- [ ] Demonstrate a genuine failure when a committed value in an exported receipt is changed.
-- [ ] Test the Solidity contract for successful recording, duplicate observation rejection, duplicate digest rejection, and unauthorized publisher rejection.
-- [ ] If showing real anchoring, deploy the registry to Sepolia with the intended publisher wallet, configure its actual address, and verify a successful receipt and stored digest. Otherwise present it as an optional integration that is not yet deployed.
-- [ ] Record a clear 3–5 minute demo using the accompanying script. Use the actual values visible during recording.
-- [ ] Replace the demo video placeholder with the actual watchable video URL.
-- [ ] Confirm the team's eligibility and members against the organizers' current guidance.
-- [ ] Resolve the submission timing conflict with the organizers. Do not submit automatically.
+GitHub publication, a video and submission are outside the current requested work. Public sharing and any real testnet anchor require their own actual configuration. Previously captured organizer timing notes are retained below for a later submission decision; they are not a current eligibility or deadline verification.
 
 ## Submission timing conflict
 

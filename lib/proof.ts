@@ -1,3 +1,4 @@
+import type {ClimateData} from './climate';
 export type Receipt={payload:Record<string,unknown>;digest:string;observationId:string;algorithm:"SHA-256";canonicalization:"TerraTrace sorted-key JSON v1";createdAt:string;txHash?:string;contract?:string};
 // Versioned deterministic JSON for JSON-compatible payloads; not a claim of full RFC 8785 compliance.
 export function canonical(value: unknown): string {
@@ -7,6 +8,11 @@ export function canonical(value: unknown): string {
 }
 export async function digest(value: unknown) { const bytes=new TextEncoder().encode(canonical(value)); const hash=await crypto.subtle.digest("SHA-256",bytes);return "0x"+Array.from(new Uint8Array(hash)).map(n=>n.toString(16).padStart(2,"0")).join(""); }
 export async function makeReceipt(payload: Record<string,unknown>, identity: Record<string,unknown>):Promise<Receipt> {return {payload,digest:await digest(payload),observationId:await digest(identity),algorithm:"SHA-256",canonicalization:"TerraTrace sorted-key JSON v1",createdAt:new Date().toISOString()};}
+export async function makeEnvironmentalReceipt(data: ClimateData): Promise<Receipt> {
+  if(!data.weather||!data.air)throw Error("Both sources are needed to seal evidence.");
+  const identity={provider:"Open-Meteo+CAMS",location:[data.city.lat,data.city.lon],weatherTime:data.weather.current.time,airTime:data.air.current.time,forecastStart:data.weather.hourly.time[0]??null,forecastEnd:data.weather.hourly.time.at(-1)??null,sourceDigest:await digest({weather:data.weather,air:data.air,sources:data.sources}),version:"environmental-observation-v1"};
+  return makeReceipt({schema:"terratrace-evidence-v1",observationIdentity:identity,city:data.city,source:{...data.sources,retrievedAt:data.retrievedAt,status:data.status,attribution:"Open-Meteo and Copernicus CAMS, CC BY 4.0"},weather:data.weather,air:data.air,methodology:"Environmental model snapshot; Isolation Forest 64 trees seed 2026"},identity);
+}
 export async function verifyReceipt(value:unknown) {
   if(!value||typeof value!=="object")throw Error("Choose a TerraTrace JSON receipt.");
   const r=value as Receipt;if(r.algorithm!=="SHA-256"||r.canonicalization!=="TerraTrace sorted-key JSON v1"||!r.payload||!/^0x[0-9a-f]{64}$/.test(r.digest))throw Error("This file is not a supported receipt.");

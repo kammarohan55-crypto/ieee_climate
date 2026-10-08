@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "TerraTrace | Climate intelligence, with evidence",
-  description: "Explore real environmental forecasts, plan solar energy, and verify climate data with cryptographic receipts.",
+  description: "Inspect a real city district, compare climate interventions, and preserve environmental evidence with cryptographic receipts.",
   other: {
     "codex-preview": "development",
   },
