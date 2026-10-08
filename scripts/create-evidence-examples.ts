@@ -1,0 +1,6 @@
+import fs from 'node:fs';
+import {makeReceipt} from '../lib/proof';
+const {data}=JSON.parse(fs.readFileSync('public/reference-data.json','utf8').replace(/^\uFEFF/,''));const d=data[1];
+const observationIdentity={provider:'Open-Meteo+CAMS',location:[d.city.lat,d.city.lon],weatherTime:d.weather.current.time,airTime:d.air.current.time,forecastStart:d.weather.hourly.time[0],forecastEnd:d.weather.hourly.time.at(-1),version:'v1'};
+const receipt=await makeReceipt({schema:'terratrace-evidence-v1',observationIdentity,city:d.city,source:{...d.sources,retrievedAt:d.retrievedAt,status:'snapshot',attribution:'Open-Meteo and Copernicus CAMS, CC BY 4.0'},weather:d.weather,air:d.air,scenario:{dayOffset:1,capacityKWp:5,performanceFactor:.8,taskPowerKW:2,durationHours:3,baselineStartHour:18,assumedGridKgCO2ePerKWh:.4}},observationIdentity);
+fs.mkdirSync('public/examples',{recursive:true});fs.writeFileSync('public/examples/intact-receipt.json',JSON.stringify(receipt,null,2));const tampered=structuredClone(receipt);(tampered.payload.weather as {current:{temperature_2m:number}}).current.temperature_2m+=5;fs.writeFileSync('public/examples/tampered-receipt.json',JSON.stringify(tampered,null,2));console.log('Created a genuine captured-data receipt and intentionally tampered copy for the verification demo.');
