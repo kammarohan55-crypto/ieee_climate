@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {canonical,verifyReceipt} from '../lib/proof';
+import {waterBalance,capacitySweep,WATER_MODEL_VERSION,type WaterSettings,type WaterBalance,type CapacityCandidate} from '../lib/water';
+import type {City,ClimateData,ModelResponse} from '../lib/climate';
+import type {UrbanFeature} from '../lib/twin';
+
+const file=process.argv[2]??'public/examples/water-plan-receipt.json';
+const exported=JSON.parse(fs.readFileSync(file,'utf8'));
+const verification=await verifyReceipt(exported);
+assert.equal(verification.valid,true,'The exported payload and observation identity must verify.');
+const p=verification.receipt.payload as {
+ schema:string;modelVersion:string;city:City;
+ source:{weather:ModelResponse;url:string;retrievedAt:string;status:ClimateData['status']};
+ map:{feature:UrbanFeature;osmTime:string;url:string;attribution:string;query:string};
+ settings:WaterSettings;results:WaterBalance;
+ capacityComparisons:{initialStorageM3:number;candidates:CapacityCandidate[]};
+};
+assert.equal(p.schema,'terratrace-roof-water-v1');
+assert.equal(p.modelVersion,WATER_MODEL_VERSION);
+assert.ok(p.map.attribution&&p.map.query&&p.map.osmTime&&p.map.url);
+assert.ok(p.source.url.includes('rain,showers')&&p.source.url.includes('precipitation_unit=mm'));
+const active:ClimateData={city:p.city,weather:p.source.weather,air:null,sources:{weather:p.source.url,air:''},retrievedAt:p.source.retrievedAt,status:p.source.status};
+assert.equal(canonical(p.results),canonical(waterBalance(active,p.map.feature,p.settings)),'Recomputed roof-water results must match the browser export exactly.');
+assert.equal(p.capacityComparisons.initialStorageM3,0);
+assert.equal(canonical(p.capacityComparisons.candidates),canonical(capacitySweep(active,p.map.feature,p.settings)),'Every capacity result must match an empty-start recalculation.');
+const changed=structuredClone(exported);
+changed.payload.source.weather.hourly.rain[0]+=.1;
+assert.equal((await verifyReceipt(changed)).valid,false,'Changing even one forecast rain value must invalidate the receipt.');
+console.log(`PASS: browser-exported water receipt verified and exactly reproduced for OSM ${p.map.feature.id}, ${p.results.date}; empty-start capacity sweep and source tampering checked.`);

@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx tests/verify.ts",
     "test:twin": "tsx tests/twin.ts",
+    "test:water": "tsx tests/water.ts",
     "test:contract": "node scripts/verify-contract.mjs"
   },
   "dependencies": {

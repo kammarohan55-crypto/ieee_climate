@@ -14,6 +14,13 @@ import Research from "@/components/research";
 import {readReceipts,writeReceipts} from "@/lib/storage";
 const NAV=[{label:"City digital twin",icon:Building2},{label:"Research library",icon:FlaskConical},{label:"Overview",icon:LayoutDashboard},{label:"Explore the planet",icon:Compass},{label:"Proof ledger",icon:Fingerprint},{label:"Methodology",icon:BookOpen}];
 type View="City digital twin"|"Research library"|"Overview"|"Explore the planet"|"Proof ledger"|"Methodology";
+const usableWeather=(d:ClimateData)=>typeof d.weather?.current?.time==="string"&&Array.isArray(d.weather?.hourly?.time)&&d.weather.hourly.time.length>0;
+async function referenceData():Promise<ClimateData[]>{
+ for(const path of ["/climate-reference-v2.json","/reference-data.json"]){
+  try{const r=await fetch(path);if(!r.ok)throw Error("Reference capture unavailable.");const j=await r.json() as {data?:ClimateData[]};if(!Array.isArray(j.data)||!j.data.length)throw Error("Invalid reference capture.");return j.data.map<ClimateData>(d=>({...d,status:d.weather&&d.air?"snapshot":"partial"}));}catch{}
+ }
+ throw Error("Reference captures are unavailable.");
+}
 export default function Home(){
  const [view,setView]=useState<View>("City digital twin"),[selected,setSelected]=useState<City>(CITIES[0]),[data,setData]=useState<ClimateData[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(""),[searchOpen,setSearchOpen]=useState(false),[query,setQuery]=useState(""),[results,setResults]=useState<City[]>([]),[searchBusy,setSearchBusy]=useState(false),[searchError,setSearchError]=useState(""),[receipts,setReceipts]=useState<Receipt[]>([]),[toast,setToast]=useState(""),[busy,setBusy]=useState(false),[modelOpen,setModelOpen]=useState(false);
  const [twinSettings,setTwinSettings]=useState<TwinSettings>({...TWIN_DEFAULTS});
@@ -21,11 +28,13 @@ export default function Home(){
  const active=data.find(d=>d.city.id===selected.id),forecast=useMemo(()=>nextHours(active),[active]),signals=useMemo(()=>analyzeSignals(hours(active)),[active]);
  const notify=(message:string)=>{setToast(message);if(toastTimer.current)clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToast(""),5000)};
  const go=(next:View)=>{setView(next);window.history.replaceState(null,"",next==="City digital twin"?"/":"/?view="+encodeURIComponent(next));window.scrollTo({top:0,behavior:"smooth"})};
- const loadAll=async()=>{setLoading(true);setError("");try{const r=await fetch("/api/climate");if(!r.ok)throw Error();let next=(await r.json() as {data:ClimateData[]}).data;
-  if(next.some(d=>!d.weather||!d.air)){try{const saved=(await fetch("/reference-data.json").then(r=>r.json()) as {data:ClimateData[]}).data;next=next.map(d=>d.weather&&d.air?d:({...saved.find(s=>s.city.id===d.city.id)??d,status:"snapshot"}));}catch{}}
+ const loadAll=async()=>{setLoading(true);setError("");try{const r=await fetch("/api/climate");if(!r.ok)throw Error();let next=(await r.json() as {data:ClimateData[]}).data;if(!Array.isArray(next)||!next.length)throw Error();
+  // Keep usable live weather even if air quality failed. A fallback replaces a whole entry,
+  // never combines sources captured at different times into an apparently live result.
+  if(next.some(d=>!usableWeather(d))){try{const saved=await referenceData();next=next.map(d=>usableWeather(d)?d:(saved.find(s=>s.city.id===d.city.id&&usableWeather(s))??d));}catch{}}
   if(!CITIES.some(c=>c.id===selected.id)){try{const q=new URLSearchParams({lat:String(selected.lat),lon:String(selected.lon),name:selected.name,country:selected.country});const custom=await fetch("/api/climate?"+q);if(!custom.ok)throw Error();next.push(...(await custom.json() as {data:ClimateData[]}).data.map(d=>({...d,city:selected})))}catch{setError("This location could not be refreshed. Its original source time is retained.")}}
-  setData(old=>[...next,...old.filter(d=>!next.some(n=>n.city.id===d.city.id))]);if(next.some(d=>d.status!=="live"))setError("Some locations use a dated reference capture. Check the source time before planning.");
- }catch{try{const j=await fetch("/reference-data.json").then(r=>r.json()) as {data:ClimateData[]};setData(j.data.map(d=>({...d,status:"snapshot"})));setError("Live providers are unavailable. Showing an authentic, dated reference capture.")}catch{setError("Environmental data is temporarily unavailable. Please try refresh.")}}finally{setLoading(false)}};
+  setData(old=>[...next,...old.filter(d=>!next.some(n=>n.city.id===d.city.id))]);if(next.some(d=>d.status!=="live"))setError("Some sources are unavailable or use a dated reference capture. Available weather is retained; check each source time before planning.");
+ }catch{try{const saved=await referenceData();setData(old=>[...saved,...old.filter(d=>!saved.some(s=>s.city.id===d.city.id))]);setError("Live providers are unavailable. Showing an authentic, dated reference capture.")}catch{setError("Environmental data is temporarily unavailable. Please try refresh.")}}finally{setLoading(false)}};
  const choose=async(city:City)=>{setSelected(city);setSearchOpen(false);setQuery("");if(data.some(d=>d.city.id===city.id))return;setLoading(true);try{const q=new URLSearchParams({lat:String(city.lat),lon:String(city.lon),name:city.name,country:city.country});const r=await fetch("/api/climate?"+q);if(!r.ok)throw Error();const j=await r.json() as {data:ClimateData[]};setData(old=>[...old.filter(d=>d.city.id!==city.id),...j.data.map(d=>({...d,city}))]);}catch{notify("This location is unavailable. Try again or choose a featured city.")}finally{setLoading(false)}};
  useEffect(()=>{void loadAll();void readReceipts().then(r=>setReceipts(r.filter(r=>r.payload&&/^0x[0-9a-f]{64}$/.test(r.digest))));const v=new URLSearchParams(location.search).get("view");if(NAV.some(n=>n.label===v))setView(v as View);else if(v)window.history.replaceState(null,"","/")},[]);
  useEffect(()=>{const key=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setSearchOpen(true)}if(e.key==="Escape"){setSearchOpen(false);setModelOpen(false)}};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key)},[]);

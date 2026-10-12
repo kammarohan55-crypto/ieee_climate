@@ -52,6 +52,11 @@ export default defineConfig(async ({ command }) => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    // The stopped website can be inspected only in an explicitly enabled local dev session.
+    // Production builds always compile this switch off.
+    define: {
+      'process.env.TERRATRACE_LOCAL_PREVIEW': JSON.stringify(command === 'serve' && process.env.TERRATRACE_LOCAL_PREVIEW === '1' ? '1' : '0'),
+    },
     server: {
       ...(managedLinux
         ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] }

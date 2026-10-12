@@ -3,7 +3,7 @@ const cache = new Map<string, { at: number; data: ClimateData }>();
 function urls(city: City) {
   const common = `latitude=${city.lat}&longitude=${city.lon}&timezone=auto&forecast_days=3`;
   return {
-    weather: `https://api.open-meteo.com/v1/forecast?${common}&current=temperature_2m,relative_humidity_2m,apparent_temperature,cloud_cover,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,global_tilted_irradiance,shortwave_radiation&daily=temperature_2m_max,temperature_2m_min&tilt=${Math.round(Math.abs(city.lat))}&azimuth=${city.lat < 0 ? 180 : 0}`,
+    weather: `https://api.open-meteo.com/v1/forecast?${common}&precipitation_unit=mm&current=temperature_2m,relative_humidity_2m,apparent_temperature,cloud_cover,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,global_tilted_irradiance,shortwave_radiation,rain,showers&daily=temperature_2m_max,temperature_2m_min&tilt=${Math.round(Math.abs(city.lat))}&azimuth=${city.lat < 0 ? 180 : 0}`,
     air: `https://air-quality-api.open-meteo.com/v1/air-quality?${common}&current=us_aqi,pm2_5,pm10,nitrogen_dioxide,ozone&hourly=us_aqi,pm2_5`,
   };
 }
@@ -15,10 +15,12 @@ async function model(url: string): Promise<ModelResponse> {
   throw error;
 }
 async function read(city: City): Promise<ClimateData> {
-  const key=`${city.lat},${city.lon}`; const saved=cache.get(key); if(saved && Date.now()-saved.at<300000) return {...saved.data,city};
+  const key=`${city.lat},${city.lon}`; const saved=cache.get(key); if(saved && Date.now()-saved.at<(saved.data.status==="partial"?30000:300000)) return {...saved.data,city};
   const sources=urls(city); const [w,a]=await Promise.allSettled([model(sources.weather),model(sources.air)]);
-  const data: ClimateData = {city,weather:w.status==="fulfilled"?w.value:null,air:a.status==="fulfilled"?a.value:null,sources,retrievedAt:new Date().toISOString(),status:w.status==="fulfilled"&&a.status==="fulfilled"?"live":"partial",errors:[w,a].filter(r=>r.status==="rejected").map(()=>"A data provider is temporarily unavailable.")};
-  if(data.weather && data.air) cache.set(key,{at:Date.now(),data});
+  const errors:string[]=[];if(w.status==="rejected")errors.push("Weather data is temporarily unavailable.");if(a.status==="rejected")errors.push("Air-quality data is temporarily unavailable.");
+  const data: ClimateData = {city,weather:w.status==="fulfilled"?w.value:null,air:a.status==="fulfilled"?a.value:null,sources,retrievedAt:new Date().toISOString(),status:w.status==="fulfilled"&&a.status==="fulfilled"?"live":"partial",errors};
+  // A partial entry keeps the two results from this fetch; older sources are never merged into it.
+  if(data.weather || data.air) cache.set(key,{at:Date.now(),data});
   return data;
 }
 export async function GET(request: Request) {

@@ -2,11 +2,15 @@
 
 **Climate intelligence, with evidence.** A working IEEE ClimateChain 2026 prototype for community energy projects, campus sustainability teams, and environmental researchers.
 
+**Source code:** [https://github.com/kammarohan55-crypto/ieee_climate](https://github.com/kammarohan55-crypto/ieee_climate)
+
 Primary track: **Climate Data & Environmental Monitoring**. Supporting track: **Renewable Energy & Energy Trading** (energy planning, not a trading market).
 
 ## City planning twin
 
-The project now opens on a real-map district twin with interactive before/after comparison, cool roofs, rooftop solar, planned mature trees, energy balance, transferred research cooling sensitivities, and verifiable city-scenario receipts. Eight featured cities have authentic OpenStreetMap geometry. The full-width twin includes an expanded inspection workspace, searchable building solar survey queue and animated geometric sun/shadow timeline. The City strategy lab saves up to four plans per city and compares them against one frozen source snapshot. The Evidence lens colors height provenance, inspects clipped footprint-density cells and exports a saved building survey checklist. The Research library credits nine peer-reviewed papers (2024–2026) and eight organizer-verified winning projects. Read [the full twin methodology](docs/CITY-TWIN.md) for formulas, source coverage and limitations.
+The project opens on one large, inspectable district map with cool roofs, rooftop solar, proposed mature trees, energy balance and transferred research cooling sensitivities. Eight featured cities have authentic OpenStreetMap geometry. Expand the map, search buildings, inspect solar survey candidates and animate geometric sun/shadow positions. The City strategy lab saves up to four plans per city against one frozen source snapshot: numeric comparisons show the reference and displayed plans, while the entire map shows the displayed plan.
+
+The separate rainwater lab follows a selected mapped roof through 24 hours of forecast liquid rain, collection, assumed tank storage, non-potable reuse and overflow. Capacity comparisons, a roof survey queue, a manual checklist and portable receipts connect the scenario to a site visit. The Evidence lens inspects height provenance and footprint density, with a saved building survey list. The Research library credits **11 peer-reviewed papers (2024–2026)** and **10 organizer-verified winning projects**, reviewed on 8 October 2026. Read [the methodology](docs/CITY-TWIN.md) for formulas, sources and limitations.
 
 ## What works
 
@@ -14,32 +18,40 @@ The project now opens on a real-map district twin with interactive before/after 
 - Real Open-Meteo weather, solar irradiance, and Copernicus CAMS air forecasts for eight featured cities and worldwide geocoding.
 - Forecast charts, regional comparison, and explicit local time zones.
 - District roof-treatment and mature-canopy scenarios, building survey estimates, and an animated geometric shade timeline inside the city twin.
+- Selected-roof rainwater scenarios using real hourly rain and showers in mm, editable collection and storage assumptions, eight fixed capacity candidates plus the custom capacity, and source-preserving exports.
 - A genuine 64-tree seeded Isolation Forest, trained locally on up to 72 hourly temperature, humidity, and PM₂.₅ forecast samples. This exploratory model has no independently validated predictive accuracy.
 - Portable SHA-256 evidence receipts containing raw model responses, source URLs, retrieval time, units, attribution, location, and scenario. A separate import verifier checks payload integrity and observation identity.
 - A publisher-only Solidity registry that rejects repeated declared observation IDs and repeated exact digests.
 - Optional Sepolia wallet anchoring: verifies chain, deployed code, publisher address, transaction confirmation, and registry read-back before marking an anchor.
 - Responsive layout, keyboard navigation, modal focus trapping, reduced-motion support, and feature-detected WebMCP tools.
 
-## Run locally
+## Run a temporary local preview
 
-Requires Node.js 22.13+.
+The hosted website remains **offline**. Requires Node.js 22.13+. The explicit preview flag permits application access only through `localhost` or `127.0.0.1`:
 
-```sh
-npm install
+```powershell
+git clone https://github.com/kammarohan55-crypto/ieee_climate.git
+cd ieee_climate
+npm run install:ci
+$env:TERRATRACE_LOCAL_PREVIEW = '1'
 npm run dev
 ```
 
-Open the exact local URL printed by the server. No API keys are required for the noncommercial prototype.
+Open the exact loopback URL printed by the server. Stop the preview with Ctrl+C and clear the flag with `Remove-Item Env:TERRATRACE_LOCAL_PREVIEW`. Set this flag only for temporary local work; leave it unset in production. Production access remains the offline page. No API keys are required for the noncommercial prototype.
 
-```sh
+```powershell
 npm run typecheck
 npm test
 npm run test:twin
+npm run test:water
+node node_modules/tsx/dist/cli.mjs scripts/verify-water-export.ts
 npm run test:contract
 npm run build
 ```
 
-Stack: React 19, TypeScript, Vinext/Vite, Cloudflare Workers-compatible server, Recharts, Lucide, browser Canvas/Web Crypto, ethers, Solidity. `app/api/climate/route.ts` validates locations, fetches approved providers with timeouts/retry, and caches complete results for five minutes in the current server isolate. HTTP cache headers provide a short additional cache. This is a prototype cache, not durable distributed storage.
+The water export check reproduces the bundled browser-exported example exactly from its captured forecast, selected geometry and assumptions, then checks that source tampering invalidates the receipt.
+
+Stack: React 19, TypeScript, Vinext/Vite, Cloudflare Workers-compatible server, Recharts, Lucide, browser Canvas/Web Crypto, ethers, Solidity. `app/api/climate/route.ts` validates locations and fetches approved providers with bounded timeouts/retry. Complete responses are cached for five minutes and partial responses for 30 seconds in the current server isolate. Usable live weather remains available if air data fails; older air is never silently merged with a new forecast. This prototype cache is not durable distributed storage.
 
 ## Sources and honest interpretation
 
@@ -47,13 +59,16 @@ Stack: React 19, TypeScript, Vinext/Vite, Cloudflare Workers-compatible server, 
 - [Copernicus CAMS via Open-Meteo](https://open-meteo.com/en/docs/air-quality-api): pollution is a modeled forecast. Global grid resolution is approximately 45 km; Europe has finer regional coverage. Air quality is not carbon emissions.
 - [Open-Meteo terms](https://open-meteo.com/en/terms) and [CC BY 4.0 licence](https://open-meteo.com/en/licence): attribution is visible in the app and evidence. Free hosted API access is noncommercial, with usage limits. Commercial deployment needs appropriate provider arrangements.
 - [Natural Earth](https://www.naturalearthdata.com/about/terms-of-use/): public-domain land geometry, prepared by `scripts/prepare-globe.mjs`.
-- `public/reference-data.json`: authentic API responses captured on **8 October 2026**. These are used only when live providers fail, explicitly labeled as a reference capture with original dates. They are never refreshed by changing timestamps.
+- `public/climate-reference-v2.json`: authentic weather and air API responses for all eight featured cities, captured **12 October 2026, 17:09:48.945–17:09:50.565 UTC**. Weather includes hourly `rain` and `showers` with explicit `precipitation_unit=mm`; individual provider retrieval times and exact requested URLs are preserved. `scripts/capture-climate.ts` records actual responses with bounded concurrency/retries and honest partial states.
+- When live weather fails, the browser tries the v2 capture, then the unchanged original `public/reference-data.json` capture. Captures retain their original dates and a visible reference label. Missing rain in the older capture disables water outcomes instead of becoming zero rain.
 
 District solar generation is `capacity kWp × tilted irradiance W/m² / 1000 × performance factor`, with capacity derived from mapped area, assigned roof fraction and assumed panel density. Hourly radiation values describe the preceding hour; the twin reindexes them to interval start times and uses the exact next midnight to complete a local day. Panels face the equator, with tilt equal to rounded absolute latitude. Solar match is capped at assumed hourly district demand; surplus is separate. Performance and grid factors are **editable scenario assumptions**, not measurements. Carbon potential is matched solar × assumed factor, not a certified offset. The geometric shade animation does not modify PV generation or cooling results. Cell temperature, inverter clipping, batteries, annual output, and causality are not modeled. Compare [a fuller PV model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/point-value-models/pvwatts/).
 
+The water lab sums `rain + showers` over 24 complete preceding-hour intervals in the weather location's time zone; snow is excluded. Runoff is `rain mm × clipped roof m² / 1000 × assumed runoff coefficient`. Connected runoff enters one assumed tank, overflow occurs before hourly reuse, and disconnected runoff bypasses the tank. The main scenario has editable starting storage. All capacity comparisons start empty at **0, 1, 2.5, 5, 10, 25, 50 and 100 m³**, plus a distinct selected custom capacity. This is a one-day comparison, not annual sizing or flood prediction. Reuse can include starting water; roof release is bypass plus overflow. Treatment, first flush, pipe capacity, structural suitability and subhour storm timing require further work.
+
 ## Evidence and blockchain
 
-Receipts use `TerraTrace sorted-key JSON v1`: recursively sort object keys, preserve array order, use JSON number/string encoding, and UTF-8 encode before SHA-256. This is a declared versioned canonicalization scheme, not a claim of full RFC 8785 compliance. `observationIdentity` is embedded in the hashed payload and independently hashed to form `observationId`. Generic data receipts use `environmental-observation-v1`: providers, coordinates, source times, forecast interval and a digest of the raw responses and source URLs. A changed retrieval time alone retains the same identity; revised source data receives a distinct identity. City receipts separately preserve geometry and scenario inputs under `district-planning-v2`. Previously exported receipts remain verifiable, including legacy solar-scenario identities. Integrity does not prove source truth.
+Receipts use `TerraTrace sorted-key JSON v1`: recursively sort object keys, preserve array order, use JSON number/string encoding, and UTF-8 encode before SHA-256. This is a declared versioned canonicalization scheme, not a claim of full RFC 8785 compliance. `observationIdentity` is embedded in the hashed payload and independently hashed to form `observationId`. Generic data receipts use `environmental-observation-v1`: providers, coordinates, source times, forecast interval and a digest of the raw responses and source URLs. A changed retrieval time alone retains the same identity; revised source data receives a distinct identity. City receipts preserve geometry and scenario inputs under `district-planning-v2`. Water receipts preserve the selected roof, raw weather, source dates, assumptions, all hourly balances, empty-start capacity comparisons and manual checklist under `terratrace-roof-water-v1`. Previously exported receipts remain verifiable, including legacy solar-scenario identities. Integrity does not prove source truth.
 
 Receipts live in IndexedDB browser storage on this device, with legacy localStorage migration. Download them for portability. The independent verifier checks the payload and observation identity; envelope creation time and chain metadata are not asserted by that check. A URN in the registry identifies a digest, not a hosted downloadable evidence file. Keep and publish the exported evidence separately when independently shareable availability is needed.
 
@@ -68,9 +83,9 @@ No public-chain contract is predeployed and no funded wallet is bundled. `npm ru
 
 ## Demo and submission
 
-Read [the project walkthrough](docs/PROJECT-WALKTHROUGH.md), [the updated submission draft](docs/SUBMISSION.md), and [the feature roadmap](docs/FEATURE-ROADMAP.md). The standalone Solar planner has been removed. The strategy lab and evidence lens are built; water capture, measured change and shaded routes remain proposed. Saved plans and survey lists stay on this device; export them for portability. The user has deferred GitHub and requested no video; no submission has been made. The Sites source mirror is private and is not represented as a public GitHub repository.
+Read [the project walkthrough](docs/PROJECT-WALKTHROUGH.md), [the submission draft](docs/SUBMISSION.md), and [the feature roadmap](docs/FEATURE-ROADMAP.md). The strategy lab, Evidence lens and rainwater lab are built; measured-change and shaded-route tools remain proposed. The standalone Solar planner has been removed. Saved strategies, Evidence survey lists and sealed receipts stay on this device; export them for portability. The water checklist applies to the selected scenario and travels with its export. Source code is published at [https://github.com/kammarohan55-crypto/ieee_climate](https://github.com/kammarohan55-crypto/ieee_climate). No video or hackathon submission has been made. The Sites source mirror is private, and hosted access stays offline.
 
-**Do not submit automatically.** The official overview deadline is October 25, 2026 at 14:00 UTC / **7:30 PM IST**, but a rules sentence says not before 8 AM PT on October 25 (**8:30 PM IST**, after the deadline). An organizer update instead says submissions open October 5. Resolve this discrepancy directly with the organizers before submitting. [Organizer update](https://ieee-climatechain-hack.devpost.com/updates/46814-climatechain-hackathon-submissions-open-tomorrow-get-ready-to-submit), [rules](https://ieee-climatechain-hack.devpost.com/rules), [overview](https://ieee-climatechain-hack.devpost.com/).
+**Do not submit automatically.** Previously captured organizer notes contain a timing conflict: the overview deadline is October 25, 2026 at 14:00 UTC / **7:30 PM IST**, while a rules sentence says not before 8 AM PT on October 25 (**8:30 PM IST**, after that deadline). An organizer update instead says submissions open October 5. These notes are not a fresh eligibility or deadline verification. Resolve the discrepancy with the organizers before any later submission. [Organizer update](https://ieee-climatechain-hack.devpost.com/updates/46814-climatechain-hackathon-submissions-open-tomorrow-get-ready-to-submit), [rules](https://ieee-climatechain-hack.devpost.com/rules), [overview](https://ieee-climatechain-hack.devpost.com/).
 
 ## Scope and scaling
 
