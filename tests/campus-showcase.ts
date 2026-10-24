@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {advanceShowcaseTime,showcaseReady} from '../lib/campus-showcase';
+assert.equal(advanceShowcaseTime(0,20,8,false,false),0,'An unfinished model must hold the chapter clock');
+assert.equal(advanceShowcaseTime(3,20,8,true,true),3,'Pause must preserve the current chapter time');
+assert.equal(advanceShowcaseTime(3,100,8,true,false),8,'A delayed frame must finish only this chapter, not skip unseen features');
+assert.equal(advanceShowcaseTime(3,-2,8,true,false),3,'Clock changes must never reverse the replay');
+assert.equal(showcaseReady('planner',true,false,true,true,false,true),false,'The tour must await the actual planner result');
+assert.equal(showcaseReady('proof',true,true,true,false,false,true),false,'Sealing alone is insufficient; independent verification must finish');
+assert.equal(showcaseReady('timing',true,true,false,true,false,true),false,'A forecast timing chapter waits for its computed comparison');
+assert.equal(showcaseReady('timing',true,true,false,true,false,false),true,'Missing forecast coverage remains inspectable without trapping the tour');
+assert.equal(showcaseReady('proof',false,false,false,false,true,true),true,'A displayed computation failure remains navigable');
+console.log('PASS: simulation waits for real calculations and verification; pause, bounded timing, missing coverage and failures remain navigable.');

@@ -6,7 +6,17 @@
 
 Primary track: **Climate Data & Environmental Monitoring**. Supporting track: **Renewable Energy & Energy Trading** (energy planning, not a trading market).
 
-## City planning twin
+## Additional Campus Resilience workspace
+
+The new **Campus Resilience** navigation item adds a separate Southwark campus study with a large 3D/2D scene, observed-year rainwater replays, forecast-member storage comparisons, time-aware shaded journeys, bounded project portfolios, a measured-demand AI benchmark, and portable Action Passports. Its source bundles and saved plans are separate from the existing city tools. All existing features and legacy receipts remain available. Read [the campus guide](docs/CAMPUS-RESILIENCE.md) for the workflow, model boundaries, data provenance, and benchmark methodology.
+
+The bundled Building Data Genome reference clip and derived benchmark artifacts retain their upstream **CC BY-SA 4.0** terms and attribution, separately from the application code. See [benchmark attribution](public/campus-demand/README.md) and [upstream license](public/campus-demand/LICENSE-BDG2.txt). OpenStreetMap extracts retain ODbL attribution. Run `npm run test:campus` for the additional calculation, import, AI and evidence checks. Run `npm run example:campus` to reproduce a fully verified, source-backed proposal, passport, source bundle and printable brief under `outputs/deliverables/`. The example has three conceptual actions and explicitly modeled benefits; no survey, installation, signature or chain anchor is claimed.
+
+### One-click feature simulation
+
+Press **Simulate all features** in the sidebar or Campus Resilience header. The guided walkthrough runs eleven chapters with actual water, forecast, route, portfolio and passport calculations. Pause, move backward/forward, or select a chapter. It uses a temporary campus scenario and restores your prior plan on exit. The last chapter creates and independently verifies an in-memory Action Passport; saving it to Proof ledger or exporting it is an explicit button action.
+
+### Existing city planning twin
 
 The project opens on one large, inspectable district map with cool roofs, rooftop solar, proposed mature trees, energy balance and transferred research cooling sensitivities. Eight featured cities have authentic OpenStreetMap geometry. Expand the map, search buildings, inspect solar survey candidates and animate geometric sun/shadow positions. The City strategy lab saves up to four plans per city against one frozen source snapshot: numeric comparisons show the reference and displayed plans, while the entire map shows the displayed plan.
 

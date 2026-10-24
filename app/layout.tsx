@@ -5,9 +5,6 @@ import "./planning.css";
 export const metadata: Metadata = {
   title: "TerraTrace | Climate intelligence, with evidence",
   description: "Inspect a real city district, compare climate interventions, and preserve environmental evidence with cryptographic receipts.",
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

@@ -1,0 +1,375 @@
+{
+  "schema": "terratrace-conceptual-shade-siting-v1",
+  "studyId": "southwark-lsbu-public-study",
+  "model": "campus-geometric-shade-1.0.0",
+  "scenario": {
+    "water": {
+      "roofs": [],
+      "dailyDemandM3": 1,
+      "startingFillFraction": 0
+    },
+    "shadeSiteIds": [],
+    "departureDate": "2026-07-15",
+    "departureHour": 12,
+    "speedMps": 1.2,
+    "originId": "campus",
+    "destinationId": "elephant-castle"
+  },
+  "sourceGeometryDigest": "18e8ba85ba076b57536a664928babe830e397e8b5210c5b545c997c5357e862a",
+  "treeSource": {
+    "id": "osm-campus-trees",
+    "title": "OpenStreetMap mapped tree points — partial inventory",
+    "url": "https://overpass-api.de/api/interpreter",
+    "license": "ODbL 1.0",
+    "attribution": "© OpenStreetMap contributors",
+    "retrievedAt": "2026-10-13T05:09:02.626Z",
+    "observedAt": "2026-10-13T05:07:55Z",
+    "kind": "mapped",
+    "digest": "faa59200587d70f399f236aa18e53a58ab4ff333a762ac8ae1d232b6ef4fa48b",
+    "notes": [
+      "Actual mapped natural=tree nodes, not a complete canopy survey.",
+      "The 2025 GLA full CSV download did not complete within its bounded timeout; this explicitly identified OSM layer is the available fallback.",
+      "Absent crown dimensions use an assumed 6 m diameter; absent heights use an assumed 10 m. Original tree tags are retained.",
+      "Recorded geometric dimensions do not establish current health, foliage density, or complete shade coverage."
+    ]
+  },
+  "route": "route-2",
+  "routeNodeIds": [
+    "2482918398",
+    "12628281673",
+    "12628281670",
+    "12628281669",
+    "12628281668",
+    "12628281667",
+    "12628281666",
+    "12628281665",
+    "12628281664",
+    "12628281663",
+    "12628281658",
+    "14266042650",
+    "12628281657",
+    "12628281659",
+    "9136430549",
+    "25472572",
+    "25472574",
+    "10661168493",
+    "10661168494",
+    "10661168495",
+    "5455869564",
+    "5455869563",
+    "12718323457",
+    "5455869566",
+    "13924036751",
+    "13924036750",
+    "8936830395",
+    "1042706896",
+    "108190",
+    "7004860393",
+    "7004860389",
+    "3880960401",
+    "7004950066",
+    "7004950068",
+    "8936830403",
+    "7010025644",
+    "10741447651",
+    "7012668079",
+    "5828987928",
+    "5039941859",
+    "5039941860",
+    "8936834129",
+    "5039941861",
+    "6132940868",
+    "6132925498",
+    "6132936783",
+    "2105133207",
+    "11481158765",
+    "11481158766",
+    "11482200036",
+    "11481158767",
+    "11482200034",
+    "11481158768",
+    "11481192469",
+    "11481192470",
+    "11481192471",
+    "11481192472",
+    "11481192473",
+    "11481192474",
+    "13659373883",
+    "14183407208",
+    "26546062",
+    "2105133307",
+    "2105133326",
+    "2105133316",
+    "5828979854",
+    "2105133243",
+    "5984269104",
+    "2105133377",
+    "12346504478",
+    "2153248551",
+    "26546061",
+    "2105133322",
+    "12346504477",
+    "6486284684",
+    "1035501160",
+    "9010640115",
+    "8948975757",
+    "14264661364",
+    "14264661365",
+    "12626602332",
+    "9064258748",
+    "9064258747",
+    "2153248541",
+    "13021363429",
+    "13659373879",
+    "347276453",
+    "13017719338",
+    "13017719346",
+    "13017719311",
+    "13017719339"
+  ],
+  "beforeSunMinutes": 8.956016516405361,
+  "consideredExposedCandidates": 69,
+  "previousSites": [
+    {
+      "id": "concept-sail-1",
+      "label": "Campus west approach",
+      "type": "sail",
+      "x": -81.05,
+      "z": 101.39,
+      "widthM": 12,
+      "depthM": 6,
+      "heightM": 4,
+      "crownRadiusM": 0,
+      "rotation": 0,
+      "surveyed": false
+    },
+    {
+      "id": "concept-sail-2",
+      "label": "Borough Road approach",
+      "type": "sail",
+      "x": 46.8,
+      "z": 118.68,
+      "widthM": 12,
+      "depthM": 6,
+      "heightM": 4,
+      "crownRadiusM": 0,
+      "rotation": 0,
+      "surveyed": false
+    },
+    {
+      "id": "concept-sail-3",
+      "label": "Elephant approach",
+      "type": "sail",
+      "x": 133.14,
+      "z": 232.57,
+      "widthM": 12,
+      "depthM": 6,
+      "heightM": 4,
+      "crownRadiusM": 0,
+      "rotation": 0,
+      "surveyed": false
+    },
+    {
+      "id": "concept-sail-4",
+      "label": "Community path",
+      "type": "sail",
+      "x": -214.33,
+      "z": 178.24,
+      "widthM": 12,
+      "depthM": 6,
+      "heightM": 4,
+      "crownRadiusM": 0,
+      "rotation": 0,
+      "surveyed": false
+    },
+    {
+      "id": "concept-sail-5",
+      "label": "Campus north approach",
+      "type": "sail",
+      "x": 126.32,
+      "z": -57.79,
+      "widthM": 12,
+      "depthM": 6,
+      "heightM": 4,
+      "crownRadiusM": 0,
+      "rotation": 0,
+      "surveyed": false
+    },
+    {
+      "id": "concept-sail-6",
+      "label": "Transit approach",
+      "type": "sail",
+      "x": 251.12,
+      "z": 319.48,
+      "widthM": 12,
+      "depthM": 6,
+      "heightM": 4,
+      "crownRadiusM": 0,
+      "rotation": 0,
+      "surveyed": false
+    }
+  ],
+  "derivations": [
+    {
+      "id": "concept-sail-1",
+      "sourceWayId": 689756046,
+      "sourceEdgeId": "689756046-7",
+      "highway": "footway",
+      "sourceSample": {
+        "x": 70.965,
+        "z": 220.6,
+        "elapsedMin": 4.756941603895631,
+        "known": false
+      },
+      "cumulativeModeledSunReductionMin": 0.252941637737937
+    },
+    {
+      "id": "concept-sail-2",
+      "sourceWayId": 689756046,
+      "sourceEdgeId": "689756046-2",
+      "highway": "footway",
+      "sourceSample": {
+        "x": 28.18,
+        "z": 166.365,
+        "elapsedMin": 3.789966133845969,
+        "known": false
+      },
+      "cumulativeModeledSunReductionMin": 0.4517405485610215
+    },
+    {
+      "id": "concept-sail-3",
+      "sourceWayId": 1363827895,
+      "sourceEdgeId": "1363827895-2",
+      "highway": "footway",
+      "sourceSample": {
+        "x": 60.1225,
+        "z": 57.905,
+        "elapsedMin": 2.04179871743305,
+        "known": false
+      },
+      "cumulativeModeledSunReductionMin": 0.6501594978955172
+    },
+    {
+      "id": "concept-sail-4",
+      "sourceWayId": 1363827896,
+      "sourceEdgeId": "1363827896-9",
+      "highway": "footway",
+      "sourceSample": {
+        "x": 22.430333333333337,
+        "z": 19.229,
+        "elapsedMin": 1.277682298129625,
+        "known": false
+      },
+      "cumulativeModeledSunReductionMin": 0.8476260215750422
+    },
+    {
+      "id": "concept-sail-5",
+      "sourceWayId": 616544662,
+      "sourceEdgeId": "616544662-2",
+      "highway": "pedestrian",
+      "sourceSample": {
+        "x": 84.465,
+        "z": 255.48499999999999,
+        "elapsedMin": 5.3246532911942195,
+        "known": false
+      },
+      "cumulativeModeledSunReductionMin": 1.0446811003392664
+    },
+    {
+      "id": "concept-sail-6",
+      "sourceWayId": 1236537473,
+      "sourceEdgeId": "1236537473-5",
+      "highway": "footway",
+      "sourceSample": {
+        "x": 95.57944444444445,
+        "z": 380.04777777777775,
+        "elapsedMin": 7.123113990714689,
+        "known": false
+      },
+      "cumulativeModeledSunReductionMin": 1.2415746329549187
+    },
+    {
+      "id": "concept-tree-1",
+      "sourceWayId": 1363827896,
+      "sourceEdgeId": "1363827896-4",
+      "highway": "footway",
+      "sourceSample": {
+        "x": 38.95666666666666,
+        "z": 40.06833333333333,
+        "elapsedMin": 1.6565689631465612,
+        "known": false
+      },
+      "assumption": "Future 10 m tree height and 4 m crown radius; species, watering, utilities, ownership, and establishment period are unverified."
+    },
+    {
+      "id": "concept-tree-2",
+      "sourceWayId": 4253524,
+      "sourceEdgeId": "4253524-3",
+      "highway": "unclassified",
+      "sourceSample": {
+        "x": 53.1215,
+        "z": 86.616,
+        "elapsedMin": 2.487996778377223,
+        "known": false
+      },
+      "assumption": "Future 10 m tree height and 4 m crown radius; species, watering, utilities, ownership, and establishment period are unverified."
+    }
+  ],
+  "singleSites": [
+    {
+      "id": "concept-sail-1",
+      "modeledSunMinutes": 8.703074878667424,
+      "modeledReductionMin": 0.252941637737937
+    },
+    {
+      "id": "concept-sail-2",
+      "modeledSunMinutes": 8.757217605582278,
+      "modeledReductionMin": 0.19879891082308276
+    },
+    {
+      "id": "concept-sail-3",
+      "modeledSunMinutes": 8.757597567070865,
+      "modeledReductionMin": 0.19841894933449566
+    },
+    {
+      "id": "concept-sail-4",
+      "modeledSunMinutes": 8.758549992725838,
+      "modeledReductionMin": 0.19746652367952322
+    },
+    {
+      "id": "concept-sail-5",
+      "modeledSunMinutes": 8.758961437641142,
+      "modeledReductionMin": 0.1970550787642189
+    },
+    {
+      "id": "concept-sail-6",
+      "modeledSunMinutes": 8.75912298378971,
+      "modeledReductionMin": 0.19689353261565046
+    },
+    {
+      "id": "concept-tree-1",
+      "modeledSunMinutes": 8.795115667519129,
+      "modeledReductionMin": 0.16090084888623224
+    },
+    {
+      "id": "concept-tree-2",
+      "modeledSunMinutes": 8.825853771052563,
+      "modeledReductionMin": 0.13016274535279848
+    }
+  ],
+  "bestTwoSails": {
+    "ids": [
+      "concept-sail-1",
+      "concept-sail-2"
+    ],
+    "modeledSunMinutes": 8.50427596784434,
+    "modeledReductionMin": 0.4517405485610215
+  },
+  "limits": [
+    "These are proposed, unsurveyed concepts derived from a model; no site access, permission, installation, structural design or environmental benefit is verified.",
+    "Sites are projected near mapped walking-path or street-access proxy segments, outside building-filled footprint sample points. Public-street centerlines are not verified sidewalks.",
+    "The model uses existing assumed height/crown dimensions, time-aware opaque geometric shade and the declared 20-route candidate bound.",
+    "Shelter dimensions remain assumed 12 m × 6 m at 4 m height. Future trees are 10 m tall with assumed 4 m crowns; maturity and species are not modeled.",
+    "Only shadeSites are replaced; original public observations, tree rows, buildings, rainfall, and source manifests remain intact."
+  ]
+}

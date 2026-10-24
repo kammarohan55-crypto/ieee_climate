@@ -16,11 +16,18 @@
     "test": "tsx tests/verify.ts",
     "test:twin": "tsx tests/twin.ts",
     "test:water": "tsx tests/water.ts",
-    "test:contract": "node scripts/verify-contract.mjs"
+    "test:contract": "node scripts/verify-contract.mjs",
+    "test:campus": "tsx tests/campus-water.ts && tsx tests/campus-shade.ts && tsx tests/campus-planner.ts && tsx tests/campus-proposals.ts && tsx tests/campus-demand.ts && tsx tests/campus-evidence.ts",
+    "capture:campus": "tsx scripts/capture-campus.ts",
+    "train:campus-demand": "python scripts/train-campus-demand.py",
+    "example:campus": "tsx scripts/export-campus-example.ts",
+    "derive:campus-shade": "tsx scripts/derive-campus-shade-sites.ts",
+    "test:showcase": "tsx tests/campus-showcase.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@hookform/resolvers": "^5.7.1",
+    "@react-three/fiber": "^9.8.1",
     "@shadcn/react": "^0.3.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
@@ -42,6 +49,7 @@
     "recharts": "^3.8.0",
     "sonner": "^2.0.8",
     "tailwind-merge": "3.6.0",
+    "three": "^0.186.1",
     "vaul": "^1.1.2",
     "zod": "^3.25.76"
   },
@@ -52,6 +60,7 @@
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
     "drizzle-kit": "0.31.10",

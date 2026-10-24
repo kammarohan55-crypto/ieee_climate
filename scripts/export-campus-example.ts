@@ -1,0 +1,23 @@
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import type {CampusScenario,RainArchive,RainEnsemble,StudyArea} from '../lib/campus-types';
+import {planPortfolios,type PlanTargets} from '../lib/campus-planner';
+import {runAnnual} from '../lib/campus-water';
+import {compareRoutes} from '../lib/campus-shade';
+import {makeCampusPassport,verifyCampusPassport,campusPassportBrief,campusPassportZip} from '../lib/campus-passport';
+import {parseCampusPlan,type SavedCampusPlan} from '../lib/campus-proposals';
+const json=async(path:string)=>JSON.parse(await readFile(path,'utf8'));
+const study=await json('public/campus/study.json') as StudyArea,archive=await json('public/campus/rainfall.json') as RainArchive,ensemble=await json('public/campus/forecast.json') as RainEnsemble;
+const original:CampusScenario={water:{roofs:study.defaultRoofIds.map(buildingId=>({buildingId,capacityM3:10,connectedFraction:.8,runoffCoefficient:.8})),dailyDemandM3:1,startingFillFraction:0},shadeSiteIds:study.shadeSites.filter(s=>s.type==='sail').slice(0,2).map(s=>s.id),departureDate:'2026-07-15',departureHour:12,speedMps:1.2,originId:study.destinations.find(d=>d.kind==='campus')!.id,destinationId:study.destinations.find(d=>d.kind==='transit')!.id};
+// A declared demonstration goal, not an installation recommendation or achieved impact.
+const targets:PlanTargets={waterCoverage:50,sunReduction:5,tankCostPerM3:null,shadeCostEach:null,budgetGBP:null},result=planPortfolios(study,archive,original,targets),candidate=result.recommended;
+if(!candidate)throw Error('The source-backed example cannot meet its declared goals; inspect the current data.');
+const scenario:CampusScenario={...original,water:{...original.water,startingFillFraction:0,roofs:original.water.roofs.map((r,i)=>({...r,capacityM3:candidate.capacities[i]}))},shadeSiteIds:candidate.shadeSiteIds};
+const costEvidence={kind:'assumed' as const,source:'Installation prices unknown. No supplier quote or budget supplied.'},planningComparison={schema:'terratrace-campus-planning-evidence-v1' as const,scenario:original,targets,result,selectedCandidateId:candidate.id,costEvidence};
+const runs=archive.acceptedYears.map(year=>runAnnual(study,archive,scenario.water,year)),route=compareRoutes(study,scenario,true);
+const receipt=await makeCampusPassport(study,archive,ensemble,scenario,runs,route,{planningComparison},{planId:'southwark-public-data-example',title:'Southwark campus · public-data example',state:'Needs survey',reviewNotes:'Demonstration proposal with modeled outcomes. No university partnership, survey, installation, achieved savings, signature or chain anchor is claimed.'});
+const verification=await verifyCampusPassport(receipt);if(!verification.valid)throw Error(verification.errors.join('; '));
+const proposal:SavedCampusPlan={schema:'terratrace-campus-saved-plan-v1',id:'southwark-public-data-example',title:'Southwark public-data example',createdAt:receipt.createdAt,study,archive,ensemble,scenario,targets,costEvidence,planningDecision:{scenario,evidence:planningComparison}};
+parseCampusPlan(proposal);
+const directory='outputs/deliverables';await mkdir(directory,{recursive:true});
+await Promise.all([writeFile(`${directory}/TerraTrace-campus-proposal.json`,JSON.stringify(proposal,null,2)),writeFile(`${directory}/TerraTrace-campus-action-passport.json`,JSON.stringify(receipt,null,2)),writeFile(`${directory}/TerraTrace-campus-action-passport.zip`,campusPassportZip(receipt)),writeFile(`${directory}/TerraTrace-campus-brief.html`,campusPassportBrief(receipt)),writeFile(`${directory}/TerraTrace-campus-verification.json`,JSON.stringify({checkedAt:new Date().toISOString(),digest:receipt.digest,checks:verification.checks,valid:verification.valid,modeled:{worstCoverage:candidate.worstCoverage,sunReductionPercent:candidate.sunReductionPercent,capacityM3:candidate.totalCapacityM3,actions:candidate.interventions}},null,2))]);
+console.log(`Verified public-data example: ${candidate.interventions} conceptual actions, ${candidate.totalCapacityM3} m³ storage, ${candidate.worstCoverage.toFixed(1)}% modeled coverage, ${candidate.sunReductionPercent?.toFixed(1)}% modeled sun reduction. Outputs saved locally; no wallet or publication.`);
